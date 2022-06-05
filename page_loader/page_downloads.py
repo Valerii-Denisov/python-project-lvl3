@@ -11,9 +11,13 @@ SUFFIX = types.MappingProxyType({
     'directory': '_files',
     'html_page': '.html',
     'images': '.png',
+    'css': '.css',
+    'js': '.js',
 })
 CONTENT_TYPE = types.MappingProxyType({
     'images': dict(tag='img', pattern=r'png|jpg', linc='src', write='wb'),
+    'css': dict(tag='link', pattern=r'css', linc='href', write='wb'),
+    'js': dict(tag='script', pattern=r'js', linc='src', write='wb'),
 })
 
 
@@ -27,6 +31,18 @@ def page_download(url, local_path):
         directory_path,
         'images',
     )
+    page_content = save_content(
+        page_content,
+        parser.urlparse(url).netloc,
+        directory_path,
+        'css',
+    )
+    page_content = save_content(
+        page_content,
+        parser.urlparse(url).netloc,
+        directory_path,
+        'js',
+    )
     html_file_path = get_path(url, local_path, 'html_page')
     with open(html_file_path, 'w') as write_file:
         write_file.write(page_content)
@@ -35,11 +51,26 @@ def page_download(url, local_path):
 
 def get_name(raw_address, object_type, home_netloc=''):
     url_data = parser.urlparse(raw_address)
-    raw_name = '{0}{1}{2}'.format(home_netloc, url_data.netloc, url_data.path)
+    if url_data.netloc:
+        raw_name = '{0}{1}'.format(url_data.netloc, url_data.path)
+    else:
+        raw_name = '{0}{1}'.format(home_netloc, url_data.path)
     name = re.sub(r'(/|[.])', '-', raw_name)
     if object_type == 'images':
         element_name = re.search(
             r"[a-zA-Z\d-]*(?=-jpg|-png)",
+            name,
+        )
+        return element_name.group() + SUFFIX[object_type]
+    elif object_type == 'css':
+        element_name = re.search(
+            r"[a-zA-Z\d-]*(?=-css)",
+            name,
+        )
+        return element_name.group() + SUFFIX[object_type]
+    elif object_type == 'js':
+        element_name = re.search(
+            r"[a-zA-Z\d-]*(?=-js)",
             name,
         )
         return element_name.group() + SUFFIX[object_type]
