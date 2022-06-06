@@ -1,4 +1,3 @@
-
 import os
 import re
 import types
@@ -13,12 +12,14 @@ SUFFIX = types.MappingProxyType({
     'images': '.png',
     'css': '.css',
     'js': '.js',
-})
+}
+)
 CONTENT_TYPE = types.MappingProxyType({
     'images': dict(tag='img', pattern=r'png|jpg', linc='src', write='wb'),
     'css': dict(tag='link', pattern=r'css', linc='href', write='wb'),
     'js': dict(tag='script', pattern=r'js', linc='src', write='wb'),
-})
+}
+)
 
 
 def page_download(url, local_path):
@@ -92,10 +93,11 @@ def get_path(url, local_path, source_type):
 
 
 def save_content(content, home_netloc, directory, resource_type):
-    for element in find_some(content, CONTENT_TYPE[resource_type]['tag']):
+    result = content
+    for element in find_some(result, CONTENT_TYPE[resource_type]['tag']):
         if re.search(
-            CONTENT_TYPE[resource_type]['pattern'],
-            element[CONTENT_TYPE[resource_type]['linc']],
+                CONTENT_TYPE[resource_type]['pattern'],
+                element[CONTENT_TYPE[resource_type].get('linc')],
         ):
             object_url_data = parser.urlparse(
                 element[CONTENT_TYPE[resource_type]['linc']],
@@ -114,12 +116,13 @@ def save_content(content, home_netloc, directory, resource_type):
                     object_url_data.path,
                 )
                 with open(
-                    element_local_path,
-                    CONTENT_TYPE[resource_type]['write'],
+                        element_local_path,
+                        CONTENT_TYPE[resource_type]['write'],
                 ) as write_file:
                     write_file.write(requests.get(element_url).content)
-                return re.sub(
+                result = re.sub(
                     element[CONTENT_TYPE[resource_type]['linc']],
                     element_local_path,
-                    content,
+                    result,
                 )
+    return result
