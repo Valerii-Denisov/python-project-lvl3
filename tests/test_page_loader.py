@@ -8,12 +8,12 @@ URL = 'https://ru.hexlet.io/courses'
 IMAGE_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
 JS_URL = 'https://ru.hexlet.io/packs/js/runtime.js'
 CSS_URL = 'https://ru.hexlet.io/assets/application.css'
-UNMODIFIED_FILE = '/home/valerii/python-project-lvl3/tests/fixtures/mocks/web_page.html'
+UNMODIFIED_FILE = 'tests/fixtures/mocks/web_page.html'
 HTML_FILE_NAME = 'ru-hexlet-io-courses.html'
-MOCKING_IMAGE = '/home/valerii/python-project-lvl3/tests/fixtures/mocks/nodejs.png'
-MOCKING_JS_FILE = '/home/valerii/python-project-lvl3/tests/fixtures/mocks/js_file.js'
-MOCKING_CSS_FILE = '/home/valerii/python-project-lvl3/tests/fixtures/mocks/css_file.css'
-MODIFIED_FILE = '/home/valerii/python-project-lvl3/tests/fixtures/web_page_mod.html'
+MOCKING_IMAGE = 'tests/fixtures/mocks/nodejs.png'
+MOCKING_JS_FILE = 'tests/fixtures/mocks/js_file.js'
+MOCKING_CSS_FILE = 'tests/fixtures/mocks/css_file.css'
+MODIFIED_FILE = 'tests/fixtures/web_page_mod.html'
 
 
 def read_file(file_path, teg='r'):
