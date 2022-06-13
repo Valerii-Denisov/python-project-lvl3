@@ -177,14 +177,12 @@ def save_content(content, home_netloc, directory, resource_type):
                 element[CONTENT_TYPE[resource_type]['linc']],
             )
             if object_url_data.netloc in {'', home_netloc}:
-                element_local_path = '{0}/{1}'.format(
-                    directory,
-                    get_name(
-                        element[CONTENT_TYPE[resource_type]['linc']],
-                        resource_type,
-                        home_netloc,
-                    ),
+                name = get_name(
+                    element[CONTENT_TYPE[resource_type]['linc']],
+                    resource_type,
+                    home_netloc,
                 )
+                element_local_path = '{0}/{1}'.format(directory, name)
                 element_url = 'https://{0}{1}'.format(
                     home_netloc,
                     object_url_data.path,
@@ -196,7 +194,7 @@ def save_content(content, home_netloc, directory, resource_type):
                     write_file.write(requests.get(element_url).content)
                 result = re.sub(
                     element[CONTENT_TYPE[resource_type]['linc']],
-                    element_local_path,
+                    os.path.join(os.path.split(directory)[1], name),
                     result,
                 )
     return result
