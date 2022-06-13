@@ -4,6 +4,7 @@
 import argparse as ap
 import os
 
+import requests
 from page_loader import page_download
 
 
@@ -18,7 +19,10 @@ def main():
     )
     parser.add_argument('address')
     args = parser.parse_args()
-    print(page_download(args.address, args.output))
+    try:
+        print(page_download(args.address, args.output))
+    except requests.exceptions.ConnectionError:
+        print('ops')
 
 
 if __name__ == '__main__':

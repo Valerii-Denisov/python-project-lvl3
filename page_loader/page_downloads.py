@@ -3,6 +3,7 @@
 # import logging
 import os
 import re
+import sys
 import types
 from urllib import parse as parser
 
@@ -60,6 +61,8 @@ def page_download(url, local_path):
         Full path to saved contents.
     """
     directory_path = get_path(url, local_path, 'directory')
+    print(directory_path)
+    print(get_name(url, 'directory'))
     make_directory(directory_path)
     page_content = requests.get(url).text
     for key in CONTENT_TYPE.keys():
@@ -131,8 +134,12 @@ def make_directory(path):
     Parameters:
         path: string.
     """
-    if not os.path.isdir(path):
-        os.makedirs(path)
+    try:
+        if not os.path.isdir(path):
+            os.mkdir(path)
+    except FileNotFoundError:
+        print('Done')
+        sys.exit(1)
 
 
 def get_path(url, local_path, source_type):
