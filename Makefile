@@ -22,4 +22,4 @@ test:
 	poetry run pytest --basetemp=mydir -vv
 
 test-cover:
-	poetry run pytest --cov=page-loader tests --cov-report xml
+	poetry run pytest --cov=page_loader tests --cov-report xml
