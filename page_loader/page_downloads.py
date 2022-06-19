@@ -1,52 +1,16 @@
 """The module contains the main functions for downloading web pages."""
 
-# import logging
+import logging
 import os
 import re
 import sys
-import types
 from urllib import parse as parser
 
 import requests
 from bs4 import BeautifulSoup
+from page_loader.module_dict import CONTENT_TYPE, FILE_FORMAT
 
-SUFFIX = types.MappingProxyType({
-    'directory': '_files',
-    'html_page': '.html',
-    'images': '.png',
-    'css': '.css',
-    'js': '.js',
-})
-CONTENT_TYPE = types.MappingProxyType({
-    'images': dict(
-        tag='img',
-        pattern=r'png|jpg',
-        linc='src',
-        write='wb',
-        name_pattern='(?=-jpg|-png)',
-    ),
-    'css': dict(
-        tag='link',
-        pattern=r'css',
-        linc='href',
-        write='wb',
-        name_pattern='(?=-css)',
-    ),
-    'js': dict(
-        tag='script',
-        pattern=r'js',
-        linc='src',
-        write='wb',
-        name_pattern='(?=-js)',
-    ),
-    'html_page': dict(
-        tag='link',
-        pattern=r'^(?!.*css).|html',
-        linc='href',
-        write='wb',
-        name_pattern='',
-    ),
-})
+log_pars = logging.getLogger('app_logger')
 
 
 def page_download(url, local_path):
@@ -61,11 +25,10 @@ def page_download(url, local_path):
         Full path to saved contents.
     """
     directory_path = get_path(url, local_path, 'directory')
-    print(directory_path)
-    print(get_name(url, 'directory'))
     make_directory(directory_path)
     page_content = requests.get(url).text
     for key in CONTENT_TYPE.keys():
+        log_pars.info('Start download {0} element.'.format(key))
         page_content = save_content(
             page_content,
             parser.urlparse(url).netloc,
@@ -103,8 +66,8 @@ def get_name(raw_address, object_type, home_netloc=''):
             ),
             name,
         )
-        return element_name.group() + SUFFIX[object_type]
-    return name + SUFFIX[object_type]
+        return element_name.group() + FILE_FORMAT[object_type]
+    return name + FILE_FORMAT[object_type]
 
 
 def find_some(html_file, tag, resource_link):
@@ -137,8 +100,8 @@ def make_directory(path):
     try:
         if not os.path.isdir(path):
             os.mkdir(path)
-    except FileNotFoundError:
-        print('Done')
+    except FileNotFoundError as error:
+        log_pars.error(error)
         sys.exit(1)
 
 
