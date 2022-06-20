@@ -183,7 +183,7 @@ def find_local(raw_list, resource_type):
         resource_type: string.
 
     Returns:
-          List.
+          Resource list.
     """
     result = []
     for element in raw_list:
