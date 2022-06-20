@@ -9,6 +9,7 @@ from urllib import parse as parser
 import requests
 from bs4 import BeautifulSoup
 from page_loader.module_dict import CONTENT_TYPE, FILE_FORMAT
+from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')
 
@@ -134,37 +135,61 @@ def save_content(content, home_netloc, directory, resource_type):
           String.
     """
     result = content
-    for element in find_some(
-        result,
-        CONTENT_TYPE[resource_type]['tag'],
-        CONTENT_TYPE[resource_type]['linc'],
-    ):
+    element_list = find_local(
+        find_some(
+            result,
+            CONTENT_TYPE[resource_type]['tag'],
+            CONTENT_TYPE[resource_type]['linc'],
+        ),
+        resource_type,
+    )
+    bar = Bar('Download: ', max=len(element_list))
+    for element in element_list:
+        object_url_data = parser.urlparse(
+            element[CONTENT_TYPE[resource_type]['linc']],
+        )
+        if object_url_data.netloc in {'', home_netloc}:
+            name = get_name(
+                element[CONTENT_TYPE[resource_type]['linc']],
+                resource_type,
+                home_netloc,
+            )
+            element_local_path = '{0}/{1}'.format(directory, name)
+            element_url = 'https://{0}{1}'.format(
+                home_netloc,
+                object_url_data.path,
+            )
+            with open(
+                element_local_path,
+                CONTENT_TYPE[resource_type]['write'],
+            ) as write_file:
+                write_file.write(requests.get(element_url).content)
+            result = re.sub(
+                element[CONTENT_TYPE[resource_type]['linc']],
+                os.path.join(os.path.split(directory)[1], name),
+                result,
+            )
+            bar.next()
+    bar.finish()
+    return result
+
+
+def find_local(raw_list, resource_type):
+    """
+    Build dict is local element.
+
+    Parameters:
+        raw_list: list,
+        resource_type: string.
+
+    Returns:
+          List.
+    """
+    result = []
+    for element in raw_list:
         if re.search(
             CONTENT_TYPE[resource_type]['pattern'],
-            element[CONTENT_TYPE[resource_type].get('linc')],
+            element[CONTENT_TYPE[resource_type]['linc']],
         ):
-            object_url_data = parser.urlparse(
-                element[CONTENT_TYPE[resource_type]['linc']],
-            )
-            if object_url_data.netloc in {'', home_netloc}:
-                name = get_name(
-                    element[CONTENT_TYPE[resource_type]['linc']],
-                    resource_type,
-                    home_netloc,
-                )
-                element_local_path = '{0}/{1}'.format(directory, name)
-                element_url = 'https://{0}{1}'.format(
-                    home_netloc,
-                    object_url_data.path,
-                )
-                with open(
-                    element_local_path,
-                    CONTENT_TYPE[resource_type]['write'],
-                ) as write_file:
-                    write_file.write(requests.get(element_url).content)
-                result = re.sub(
-                    element[CONTENT_TYPE[resource_type]['linc']],
-                    os.path.join(os.path.split(directory)[1], name),
-                    result,
-                )
+            result.append(element)
     return result
