@@ -27,7 +27,7 @@ def page_download(url, local_path):
     """
     directory_path = get_path(url, local_path, 'directory')
     make_directory(directory_path)
-    page_content = requests.get(url).text
+    page_content = get_raw_data(url).text
     for key in CONTENT_TYPE.keys():
         log_pars.info('Start download {0} element.'.format(key))
         page_content = save_content(
@@ -163,7 +163,7 @@ def save_content(content, home_netloc, directory, resource_type):
                 element_local_path,
                 CONTENT_TYPE[resource_type]['write'],
             ) as write_file:
-                write_file.write(requests.get(element_url).content)
+                write_file.write(get_raw_data(element_url).content)
             result = re.sub(
                 element[CONTENT_TYPE[resource_type]['linc']],
                 os.path.join(os.path.split(directory)[1], name),
@@ -193,3 +193,33 @@ def find_local(raw_list, resource_type):
         ):
             result.append(element)
     return result
+
+
+def get_raw_data(url):
+    """
+    Load data from page.
+
+    Parameters:
+        url: string.
+
+    Raises:
+        error_one
+
+    Returns:
+          Page data.
+    """
+    try:
+        data = requests.get(url)
+        data.raise_for_status()
+    except requests.exceptions.HTTPError as error_one:
+        log_pars.error(
+            'The page cannot be loaded.'
+            '\nError code: {0}'.format(data.status_code),
+        )
+        raise error_one
+    except requests.exceptions.ConnectionError as error_two:
+        log_pars.error(
+            'The connection cannot be established. '
+            '\nError: {0}'.format(error_two),
+        )
+    return data
