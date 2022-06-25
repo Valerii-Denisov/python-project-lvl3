@@ -1,6 +1,6 @@
 import pytest
 from page_loader import page_download
-from page_loader.page_downloads import get_name
+from page_loader.naming_functions import get_name
 import requests_mock
 
 
