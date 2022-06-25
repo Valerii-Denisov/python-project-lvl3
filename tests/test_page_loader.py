@@ -1,7 +1,9 @@
 import pytest
 from page_loader import page_download
 from page_loader.naming_functions import get_name
+from page_loader.url_functions import get_raw_data
 import requests_mock
+import requests
 
 
 URL = 'https://ru.hexlet.io/courses'
@@ -36,3 +38,10 @@ def test_page_download(tmp_path):
         m.get(CSS_URL, content=read_file(MOCKING_CSS_FILE, 'rb'))
         path_file = page_download(URL, tmp_path)
         assert read_file(path_file) == read_file(MODIFIED_FILE)
+
+
+def test_get_raw_data():
+    with requests_mock.Mocker() as m:
+        m.get(URL, text=read_file(UNMODIFIED_FILE), status_code=404)
+        with pytest.raises(requests.exceptions.HTTPError):
+            assert get_raw_data(URL)
