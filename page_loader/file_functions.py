@@ -43,13 +43,13 @@ def make_directory(path):
         raise error_two
 
 
-def save_content(content, home_netloc, directory, resource_type):
+def save_content(content, parsing_url, directory, resource_type):
     """
     Save items from the specified list.
 
     Parameters:
         content: string;
-        home_netloc: string;
+        parsing_url: string;
         directory: string;
         resource_type: string.
 
@@ -64,22 +64,24 @@ def save_content(content, home_netloc, directory, resource_type):
             CONTENT_TYPE[resource_type]['linc'],
         ),
         resource_type,
+        parsing_url.netloc,
     )
     bar = Bar('Download: ', max=len(element_list))
     for element in element_list:
         object_url_data = parser.urlparse(
             element[CONTENT_TYPE[resource_type]['linc']],
         )
-        if object_url_data.netloc in {'', home_netloc}:
+        if object_url_data.netloc in {'', parsing_url.netloc}:
             name = get_name(
                 element[CONTENT_TYPE[resource_type]['linc']],
                 resource_type,
-                home_netloc,
+                parsing_url.netloc,
             )
             element_local_path = '{0}/{1}'.format(directory, name)
-            element_url = 'https://{0}{1}'.format(
-                home_netloc,
+            element_url = '{2}://{0}{1}'.format(
+                parsing_url.netloc,
                 object_url_data.path,
+                parsing_url.scheme,
             )
             with open(
                 element_local_path,

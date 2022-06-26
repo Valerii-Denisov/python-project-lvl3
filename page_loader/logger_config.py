@@ -7,12 +7,16 @@ LOGGING_CONFIG = {
             'format': '%(asctime)s %(filename)s [%(levelname)s] %(name)s: %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
+        'standard_console': {
+            'format': '%(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
     },
     'handlers': {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'standard',
+            'formatter': 'standard_console',
         },
         'file_loger': {
             'level': 'DEBUG',

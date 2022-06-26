@@ -19,12 +19,11 @@ MOCKING_IMAGE = 'tests/fixtures/mocks/nodejs.png'
 MOCKING_JS_FILE = 'tests/fixtures/mocks/js_file.js'
 MOCKING_CSS_FILE = 'tests/fixtures/mocks/css_file.css'
 MODIFIED_FILE = 'tests/fixtures/web_page_mod.html'
+WRONG_FILE_PATH = './home/valerii/wrong_directory'
+WRONG_RULE_FILE_PATH = '/some_filepath'
 CODE = {404, 403, 500}
-ERRORS = {
-    requests.exceptions.HTTPError,
-    requests.exceptions.Timeout,
-    requests.exceptions.RequestException,
-}
+ERROR_ONE = FileNotFoundError
+ERROR_TWO = PermissionError
 
 
 def read_file(file_path, teg='r'):
@@ -60,14 +59,14 @@ def test_get_raw_data(error_code):
 def test_permission_error():
     with requests_mock.Mocker() as m:
         m.get(URL, text=read_file(UNMODIFIED_FILE))
-        filepath = '/some_filepath'
-        with pytest.raises(PermissionError):
+        filepath = WRONG_RULE_FILE_PATH
+        with pytest.raises(ERROR_TWO):
             assert make_directory(filepath)
 
 
 def test_file_not_found_error():
     with requests_mock.Mocker() as m:
         m.get(URL, text=read_file(UNMODIFIED_FILE))
-        filepath = './home/valerii/wrong_directory'
-        with pytest.raises(FileNotFoundError):
+        filepath = WRONG_FILE_PATH
+        with pytest.raises(ERROR_ONE):
             assert make_directory(filepath)

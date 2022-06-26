@@ -39,7 +39,7 @@ def download(url, local_path):
         log_pars.info('Start download {0} element.'.format(key))
         page_content = save_content(
             page_content,
-            parser.urlparse(url).netloc,
+            parser.urlparse(url),
             directory_path,
             key,
         )

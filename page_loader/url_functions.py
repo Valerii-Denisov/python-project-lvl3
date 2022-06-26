@@ -2,6 +2,7 @@
 
 import logging
 import re
+from urllib import parse as parser
 
 import requests
 from bs4 import BeautifulSoup
@@ -64,7 +65,7 @@ def find_tag_content(html_file, tag, resource_link):
     return result_list
 
 
-def find_local_content(raw_list, resource_type):
+def find_local_content(raw_list, resource_type, home_netloc):
     """
     Build dict is local element.
 
@@ -81,5 +82,9 @@ def find_local_content(raw_list, resource_type):
             CONTENT_TYPE[resource_type]['pattern'],
             element[CONTENT_TYPE[resource_type]['linc']],
         ):
-            result.append(element)
+            object_url_data = parser.urlparse(
+                element[CONTENT_TYPE[resource_type]['linc']],
+            )
+            if object_url_data.netloc in {'', home_netloc}:
+                result.append(element)
     return result
