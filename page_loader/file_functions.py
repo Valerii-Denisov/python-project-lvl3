@@ -3,12 +3,15 @@
 import logging
 import os
 import re
-import sys
 from urllib import parse as parser
 
 from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_name
-from page_loader.url_functions import find_local, find_some, get_raw_data
+from page_loader.url_functions import (
+    find_local_content,
+    find_tag_content,
+    get_raw_data,
+)
 from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')
@@ -20,13 +23,24 @@ def make_directory(path):
 
     Parameters:
         path: string.
+
+    Raises:
+        FileNotFoundError: error_one,
+        PermissionError: error_two.
     """
     try:
         if not os.path.isdir(path):
             os.mkdir(path)
-    except FileNotFoundError as error:
-        log_pars.error(error)
-        sys.exit(1)
+    except FileNotFoundError as error_one:
+        log_pars.error(
+            'Target directory not found. Error: {0}'.format(error_one),
+        )
+        raise error_one
+    except PermissionError as error_two:
+        log_pars.error(
+            'Can not write to directory. Error: {0}'.format(error_two),
+        )
+        raise error_two
 
 
 def save_content(content, home_netloc, directory, resource_type):
@@ -43,8 +57,8 @@ def save_content(content, home_netloc, directory, resource_type):
           String.
     """
     result = content
-    element_list = find_local(
-        find_some(
+    element_list = find_local_content(
+        find_tag_content(
             result,
             CONTENT_TYPE[resource_type]['tag'],
             CONTENT_TYPE[resource_type]['linc'],

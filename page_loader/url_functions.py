@@ -18,7 +18,8 @@ def get_raw_data(url):
         url: string.
 
     Raises:
-        error_one
+        error_one: requests.exceptions.HTTPError,
+        error_two: requests.exceptions.ConnectionError.
 
     Returns:
           Page data.
@@ -28,19 +29,22 @@ def get_raw_data(url):
         raw_data.raise_for_status()
     except requests.exceptions.HTTPError as error_one:
         log_pars.error(
-            'The page cannot be loaded.'
-            '\nError code: {0}'.format(raw_data.status_code),
+            'The page cannot be loaded.\nError code: {0}'.format(
+                raw_data.status_code,
+            ),
         )
         raise error_one
     except requests.exceptions.ConnectionError as error_two:
         log_pars.error(
-            'The connection cannot be established. '
-            '\nError: {0}'.format(error_two),
+            'The connection cannot be established.\nError: {0}'.format(
+                error_two,
+            ),
         )
+        raise error_two
     return raw_data
 
 
-def find_some(html_file, tag, resource_link):
+def find_tag_content(html_file, tag, resource_link):
     """
     Find content from web page.
 
@@ -60,7 +64,7 @@ def find_some(html_file, tag, resource_link):
     return result_list
 
 
-def find_local(raw_list, resource_type):
+def find_local_content(raw_list, resource_type):
     """
     Build dict is local element.
 
