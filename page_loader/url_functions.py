@@ -71,7 +71,8 @@ def find_local_content(raw_list, resource_type, home_netloc):
 
     Parameters:
         raw_list: list,
-        resource_type: string.
+        resource_type: string,
+        home_netloc: string.
 
     Returns:
           Resource list.
