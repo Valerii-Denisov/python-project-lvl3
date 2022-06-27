@@ -1,7 +1,6 @@
 """The module contains the main functions for downloading web pages."""
 
 import logging
-import sys
 from urllib import parse as parser
 
 import requests.exceptions
@@ -21,20 +20,33 @@ def download(url, local_path):
         url: string;
         local_path: string
 
+    Raises:
+        FileNotFoundError: error_one,
+        PermissionError: error_two,
+        RequestException: error_tree.
+
     Returns:
         Full path to saved contents.
     """
     directory_path = get_path(url, local_path, 'directory')
     try:
         make_directory(directory_path)
-    except FileNotFoundError:
-        sys.exit(1)
-    except PermissionError:
-        sys.exit(1)
+    except PermissionError as error_one:
+        log_pars.error(
+            'Can not write to directory. Error: {0}'.format(error_one),
+        )
+        raise error_one
+    except FileNotFoundError as error_two:
+        log_pars.error(
+            'Target directory not found. Error: {0}'.format(error_two),
+        )
+        raise error_two
+
     try:
         page_content = get_raw_data(url).text
-    except requests.exceptions.RequestException:
-        sys.exit(1)
+    except requests.exceptions.RequestException as error_tree:
+        log_pars.error('Can not get page data. Error: {0}'.format(error_tree))
+        raise error_tree
     for key in CONTENT_TYPE.keys():
         log_pars.info('Start download {0} element.'.format(key))
         page_content = save_content(

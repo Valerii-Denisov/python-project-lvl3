@@ -70,3 +70,15 @@ def test_file_not_found_error():
         filepath = WRONG_FILE_PATH
         with pytest.raises(ERROR_ONE):
             assert make_directory(filepath)
+
+
+@pytest.mark.parametrize(
+    'error, wrong_filepath', [
+        (ERROR_ONE, WRONG_FILE_PATH),
+    ])
+def test_download_error(error, wrong_filepath):
+    with requests_mock.Mocker() as m:
+        m.get(URL, text=read_file(UNMODIFIED_FILE))
+        filepath = wrong_filepath
+        with pytest.raises(error):
+            assert not download(URL, filepath)

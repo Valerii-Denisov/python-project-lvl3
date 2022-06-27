@@ -25,13 +25,18 @@ def main():
     )
     parser.add_argument('address')
     args = parser.parse_args()
+    log.info('Start downloading page: {0}'.format(args.address))
     try:
-        log.info('Start downloading page: {0}'.format(args.address))
         path = download(args.address, args.output)
+    except requests.exceptions.ConnectionError:
+        sys.exit(1)
+    except FileNotFoundError:
+        sys.exit(1)
+    except PermissionError:
+        sys.exit(1)
+    else:
         log.info('Downloading complete! Path to file: {0}'.format(path))
         sys.exit(0)
-    except requests.exceptions.ConnectionError as error:
-        log.critical(error)
 
 
 if __name__ == '__main__':

@@ -25,22 +25,23 @@ def make_directory(path):
         path: string.
 
     Raises:
-        FileNotFoundError: error_one,
-        PermissionError: error_two.
+        PermissionError: error_one,
+        FileNotFoundError: error_two.
     """
     try:
         if not os.path.isdir(path):
             os.mkdir(path)
-    except FileNotFoundError as error_one:
+    except PermissionError as error_one:
         log_pars.error(
-            'Target directory not found. Error: {0}'.format(error_one),
+            'Can not write to directory. Error: {0}'.format(error_one),
         )
         raise error_one
-    except PermissionError as error_two:
+    except FileNotFoundError as error_two:
         log_pars.error(
-            'Can not write to directory. Error: {0}'.format(error_two),
+            'Target directory not found. Error: {0}'.format(error_two),
         )
         raise error_two
+
 
 
 def save_content(content, parsing_url, directory, resource_type):
