@@ -23,11 +23,16 @@ def download(url, local_path):
     Raises:
         FileNotFoundError: error_one,
         PermissionError: error_two,
-        RequestException: error_tree.
+        error_tree: RequestException.
 
     Returns:
         Full path to saved contents.
     """
+    try:
+        page_content = get_raw_data(url).text
+    except requests.exceptions.RequestException as error_tree:
+        log_pars.error('Can not get page data. Error: {0}'.format(error_tree))
+        raise error_tree
     directory_path = get_path(url, local_path, 'directory')
     try:
         make_directory(directory_path)
@@ -41,12 +46,6 @@ def download(url, local_path):
             'Target directory not found. Error: {0}'.format(error_two),
         )
         raise error_two
-
-    try:
-        page_content = get_raw_data(url).text
-    except requests.exceptions.RequestException as error_tree:
-        log_pars.error('Can not get page data. Error: {0}'.format(error_tree))
-        raise error_tree
     for key in CONTENT_TYPE.keys():
         log_pars.info('Start download {0} element.'.format(key))
         page_content = save_content(

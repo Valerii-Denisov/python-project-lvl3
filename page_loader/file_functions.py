@@ -43,7 +43,6 @@ def make_directory(path):
         raise error_two
 
 
-
 def save_content(content, parsing_url, directory, resource_type):
     """
     Save items from the specified list.
