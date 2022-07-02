@@ -4,6 +4,7 @@ import logging
 from urllib import parse as parser
 
 import requests.exceptions
+from bs4 import BeautifulSoup
 from page_loader.file_functions import make_directory, save_content
 from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_path
@@ -56,5 +57,5 @@ def download(url, local_path):
         )
     html_file_path = get_path(url, local_path, 'html_page')
     with open(html_file_path, 'w') as write_file:
-        write_file.write(page_content)
+        write_file.write(BeautifulSoup(page_content, 'html.parser').prettify())
     return html_file_path
