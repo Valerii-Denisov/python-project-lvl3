@@ -35,8 +35,8 @@ def get_name(raw_address, object_type, home_netloc=''):
             ),
             name,
         )
-        return element_name.group() + FILE_FORMAT[object_type]
-    return name + FILE_FORMAT[object_type]
+        return element_name.group() + get_suffix(url_data.path, object_type)
+    return name + get_suffix(url_data.path, object_type)
 
 
 def get_path(url, local_path, source_type):
@@ -52,3 +52,20 @@ def get_path(url, local_path, source_type):
           Path to element.
     """
     return os.path.join(local_path, get_name(url, source_type))
+
+
+def get_suffix(path, object_type):
+    """
+    Get file suffix.
+
+    Parameters:
+        path: string;
+        object_type: string.
+
+    Returns:
+          suffix.
+    """
+    _, suffix = os.path.splitext(path)
+    if suffix:
+        return suffix
+    return FILE_FORMAT[object_type]
