@@ -8,8 +8,8 @@ from urllib import parse as parser
 from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_name
 from page_loader.url_functions import (
-    find_local_content,
     find_all_content,
+    find_local_content,
     get_raw_data,
 )
 from progress.bar import Bar

@@ -22,6 +22,7 @@ WRONG_RULE_FILE_PATH = '/some_filepath'
 CODE = {404, 403, 500}
 ERROR_ONE = FileNotFoundError
 ERROR_TWO = PermissionError
+ERROR_TREE = requests.exceptions.RequestException
 
 
 def read_file(file_path, teg='r'):
@@ -71,12 +72,13 @@ def test_file_not_found_error():
 
 
 @pytest.mark.parametrize(
-    'error, wrong_filepath', [
-        (ERROR_ONE, WRONG_FILE_PATH),
+    'error, wrong_filepath, status_code', [
+        (ERROR_ONE, WRONG_FILE_PATH, 200),
+        (ERROR_TREE, WRONG_RULE_FILE_PATH, 404),
     ])
-def test_download_error(error, wrong_filepath):
+def test_download_error(error, wrong_filepath, status_code):
     with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE))
+        m.get(URL, text=read_file(UNMODIFIED_FILE), status_code=status_code)
         filepath = wrong_filepath
         with pytest.raises(error):
             assert not download(URL, filepath)

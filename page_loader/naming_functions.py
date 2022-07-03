@@ -37,7 +37,7 @@ def get_name(raw_address, object_type, home_netloc=''):
         )
         return '{0}{1}'.format(
             element_name.group(),
-            get_file_format(url_data.path, object_type)
+            get_file_format(url_data.path, object_type),
         )
     return '{0}{1}'.format(name, get_file_format(url_data.path, object_type))
 
