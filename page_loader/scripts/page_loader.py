@@ -25,7 +25,7 @@ def main():
     )
     parser.add_argument('address')
     args = parser.parse_args()
-    log.info('Start downloading page: {0}'.format(args.address))
+    print('Start downloading page: {0}'.format(args.address))
     try:
         path = download(args.address, args.output)
     except requests.exceptions.ConnectionError:
@@ -35,7 +35,7 @@ def main():
     except PermissionError:
         sys.exit(1)
     else:
-        log.info('Downloading complete! Path to file: {0}'.format(path))
+        print('Downloading complete! Path to file: {0}'.format(path))
         sys.exit(0)
 
 
