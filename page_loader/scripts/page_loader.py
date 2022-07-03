@@ -30,9 +30,9 @@ def main():
         path = download(args.address, args.output)
     except requests.exceptions.RequestException:
         sys.exit(1)
-    except FileNotFoundError:
-        sys.exit(1)
     except PermissionError:
+        sys.exit(1)
+    except FileNotFoundError:
         sys.exit(1)
     else:
         print('Downloading complete! Path to file: {0}'.format(path))
