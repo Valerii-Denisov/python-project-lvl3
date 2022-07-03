@@ -17,6 +17,7 @@ LOGGING_CONFIG = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'standard_console',
+            'stream': 'sys.stdout',
         },
         'file_loger': {
             'level': 'DEBUG',

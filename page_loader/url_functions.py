@@ -45,9 +45,9 @@ def get_raw_data(url):
     return raw_data
 
 
-def find_tag_content(html_file, tag, resource_link):
+def find_all_content(html_file, tag, resource_link):
     """
-    Find content from web page.
+    Find all content from web page.
 
     Parameters:
         html_file: string;
@@ -55,7 +55,7 @@ def find_tag_content(html_file, tag, resource_link):
         resource_link: string.
 
     Returns:
-          List of elements.
+          List of all elements in page.
     """
     result_list = []
     soup = BeautifulSoup(html_file, 'html.parser')

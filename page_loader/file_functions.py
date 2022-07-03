@@ -9,7 +9,7 @@ from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_name
 from page_loader.url_functions import (
     find_local_content,
-    find_tag_content,
+    find_all_content,
     get_raw_data,
 )
 from progress.bar import Bar
@@ -58,7 +58,7 @@ def save_content(content, parsing_url, directory, resource_type):
     """
     result = content
     element_list = find_local_content(
-        find_tag_content(
+        find_all_content(
             result,
             CONTENT_TYPE[resource_type]['tag'],
             CONTENT_TYPE[resource_type]['linc'],

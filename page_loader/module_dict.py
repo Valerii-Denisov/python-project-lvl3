@@ -4,9 +4,6 @@ import types
 FILE_FORMAT = types.MappingProxyType({
     'directory': '_files',
     'html_page': '.html',
-    'images': '.png',
-    'css': '.css',
-    'js': '.js',
 })
 CONTENT_TYPE = types.MappingProxyType({
     'images': dict(
