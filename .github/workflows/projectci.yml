@@ -1,4 +1,4 @@
-name: Gendiff CI
+name: page_loader CI
 
 on:
   - push
