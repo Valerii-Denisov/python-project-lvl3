@@ -5,7 +5,6 @@ import re
 from urllib import parse as parser
 
 import requests
-from bs4 import BeautifulSoup
 from page_loader.module_dict import CONTENT_TYPE
 
 log_pars = logging.getLogger('app_logger')
@@ -45,12 +44,12 @@ def get_raw_data(url):
     return raw_data
 
 
-def find_all_content(html_file, tag, resource_link):
+def find_all_content(page_soup, tag, resource_link):
     """
     Find all content from web page.
 
     Parameters:
-        html_file: string;
+        page_soup: string;
         tag: string;
         resource_link: string.
 
@@ -58,8 +57,7 @@ def find_all_content(html_file, tag, resource_link):
           List of all elements in page.
     """
     result_list = []
-    soup = BeautifulSoup(html_file, 'html.parser')
-    for element in soup.find_all(tag):
+    for element in page_soup.find_all(tag):
         if resource_link in element.attrs.keys():
             result_list.append(element)
     return result_list

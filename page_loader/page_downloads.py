@@ -30,7 +30,7 @@ def download(url, local_path):
         Full path to saved contents.
     """
     try:
-        page_content = get_raw_data(url).text
+        page_content = BeautifulSoup(get_raw_data(url).text, 'html.parser')
     except requests.exceptions.RequestException as error_tree:
         log_pars.error('Can not get page data. Error: {0}'.format(error_tree))
         raise error_tree
@@ -57,5 +57,5 @@ def download(url, local_path):
         )
     html_file_path = get_path(url, local_path, 'html_page')
     with open(html_file_path, 'w') as write_file:
-        write_file.write(BeautifulSoup(page_content, 'html.parser').prettify())
+        write_file.write(page_content.prettify())
     return html_file_path

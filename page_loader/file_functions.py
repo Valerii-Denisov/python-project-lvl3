@@ -2,7 +2,6 @@
 
 import logging
 import os
-import re
 from urllib import parse as parser
 
 from page_loader.module_dict import CONTENT_TYPE
@@ -88,10 +87,9 @@ def save_content(content, parsing_url, directory, resource_type):
                 CONTENT_TYPE[resource_type]['write'],
             ) as write_file:
                 write_file.write(get_raw_data(element_url).content)
-            result = re.sub(
-                element[CONTENT_TYPE[resource_type]['linc']],
-                os.path.join(os.path.split(directory)[1], name),
-                result,
+            element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
+                os.path.split(directory)[1],
+                name,
             )
             bar.next()
     bar.finish()
