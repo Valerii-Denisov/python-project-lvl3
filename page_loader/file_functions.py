@@ -6,11 +6,7 @@ from urllib import parse as parser
 
 from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_name
-from page_loader.url_functions import (
-    find_all_content,
-    find_local_content,
-    get_raw_data,
-)
+from page_loader.url_functions import get_local_content, get_raw_data
 from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')
@@ -56,15 +52,7 @@ def save_content(content, parsing_url, directory, resource_type):
           String.
     """
     result = content
-    element_list = find_local_content(
-        find_all_content(
-            result,
-            CONTENT_TYPE[resource_type]['tag'],
-            CONTENT_TYPE[resource_type]['linc'],
-        ),
-        resource_type,
-        parsing_url.netloc,
-    )
+    element_list = get_local_content(result, resource_type, parsing_url.netloc)
     bar = Bar('Download: ', max=len(element_list))
     for element in element_list:
         object_url_data = parser.urlparse(
@@ -82,11 +70,11 @@ def save_content(content, parsing_url, directory, resource_type):
                 object_url_data.path,
                 parsing_url.scheme,
             )
-            with open(
+            write_to_file(
                 element_local_path,
-                CONTENT_TYPE[resource_type]['write'],
-            ) as write_file:
-                write_file.write(get_raw_data(element_url).content)
+                resource_type,
+                get_raw_data(element_url).content,
+            )
             element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
                 os.path.split(directory)[1],
                 name,
@@ -94,3 +82,19 @@ def save_content(content, parsing_url, directory, resource_type):
             bar.next()
     bar.finish()
     return result
+
+
+def write_to_file(path, resource_type, content):
+    """
+    Save items from the specified list.
+
+    Parameters:
+        path:string;
+        content: string;
+        resource_type: string.
+    """
+    with open(
+        path,
+        CONTENT_TYPE[resource_type]['write'],
+    ) as write_file:
+        write_file.write(content)

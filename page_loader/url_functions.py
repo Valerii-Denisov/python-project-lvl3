@@ -87,3 +87,30 @@ def find_local_content(raw_list, resource_type, home_netloc):
             if object_url_data.netloc in {'', home_netloc}:
                 result.append(element)
     return result
+
+
+def get_local_content(page_soup, resource_type, home_netloc):
+    """
+    Build dict is local element.
+
+    Parameters:
+        page_soup: string,
+        resource_type: string,
+        home_netloc: string.
+
+    Returns:
+          Resource list.
+    """
+    result = []
+    for element in page_soup.find_all(CONTENT_TYPE[resource_type]['tag']):
+        if CONTENT_TYPE[resource_type]['linc'] in element.attrs.keys():
+            if re.search(
+                CONTENT_TYPE[resource_type]['pattern'],
+                element[CONTENT_TYPE[resource_type]['linc']],
+            ):
+                object_url_data = parser.urlparse(
+                    element[CONTENT_TYPE[resource_type]['linc']],
+                )
+                if object_url_data.netloc in {'', home_netloc}:
+                    result.append(element)
+    return result
