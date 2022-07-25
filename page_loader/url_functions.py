@@ -44,25 +44,6 @@ def get_raw_data(url):
     return raw_data
 
 
-def find_all_content(page_soup, tag, resource_link):
-    """
-    Find all content from web page.
-
-    Parameters:
-        page_soup: string;
-        tag: string;
-        resource_link: string.
-
-    Returns:
-          List of all elements in page.
-    """
-    result_list = []
-    for element in page_soup.find_all(tag):
-        if resource_link in element.attrs.keys():
-            result_list.append(element)
-    return result_list
-
-
 def is_local_content(element, resource_type, home_netloc):
     """
     Build dict is local element.
