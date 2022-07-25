@@ -63,30 +63,26 @@ def find_all_content(page_soup, tag, resource_link):
     return result_list
 
 
-def find_local_content(raw_list, resource_type, home_netloc):
+def is_local_content(element, resource_type, home_netloc):
     """
     Build dict is local element.
 
     Parameters:
-        raw_list: list,
+        element: bs4.element.Tag,
         resource_type: string,
         home_netloc: string.
 
     Returns:
           Resource list.
     """
-    result = []
-    for element in raw_list:
-        if re.search(
+    if re.search(
             CONTENT_TYPE[resource_type]['pattern'],
             element[CONTENT_TYPE[resource_type]['linc']],
-        ):
-            object_url_data = parser.urlparse(
-                element[CONTENT_TYPE[resource_type]['linc']],
-            )
-            if object_url_data.netloc in {'', home_netloc}:
-                result.append(element)
-    return result
+    ):
+        object_url_data = parser.urlparse(
+            element[CONTENT_TYPE[resource_type]['linc']],
+        )
+        return object_url_data.netloc in {'', home_netloc}
 
 
 def get_local_content(page_soup, resource_type, home_netloc):
@@ -104,13 +100,6 @@ def get_local_content(page_soup, resource_type, home_netloc):
     result = []
     for element in page_soup.find_all(CONTENT_TYPE[resource_type]['tag']):
         if CONTENT_TYPE[resource_type]['linc'] in element.attrs.keys():
-            if re.search(
-                CONTENT_TYPE[resource_type]['pattern'],
-                element[CONTENT_TYPE[resource_type]['linc']],
-            ):
-                object_url_data = parser.urlparse(
-                    element[CONTENT_TYPE[resource_type]['linc']],
-                )
-                if object_url_data.netloc in {'', home_netloc}:
-                    result.append(element)
+            if is_local_content(element, resource_type, home_netloc):
+                result.append(element)
     return result
