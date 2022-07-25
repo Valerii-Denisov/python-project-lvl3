@@ -58,28 +58,27 @@ def save_content(content, parsing_url, directory, resource_type):
         object_url_data = parser.urlparse(
             element[CONTENT_TYPE[resource_type]['linc']],
         )
-        if object_url_data.netloc in {'', parsing_url.netloc}:
-            name = get_name(
+        name = get_name(
                 element[CONTENT_TYPE[resource_type]['linc']],
                 resource_type,
                 parsing_url.netloc,
             )
-            element_local_path = '{0}/{1}'.format(directory, name)
-            element_url = '{2}://{0}{1}'.format(
+        element_local_path = '{0}/{1}'.format(directory, name)
+        element_url = '{2}://{0}{1}'.format(
                 parsing_url.netloc,
                 object_url_data.path,
                 parsing_url.scheme,
             )
-            write_to_file(
+        write_to_file(
                 element_local_path,
                 resource_type,
                 get_raw_data(element_url).content,
             )
-            element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
+        element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
                 os.path.split(directory)[1],
                 name,
             )
-            bar.next()
+        bar.next()
     bar.finish()
     return result
 
