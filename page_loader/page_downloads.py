@@ -48,7 +48,6 @@ def download(url, local_path):
         )
         raise error_one
     for key in CONTENT_TYPE.keys():
-        print('Start download {0} element.'.format(key))
         page_content = save_content(
             page_content,
             parser.urlparse(url),

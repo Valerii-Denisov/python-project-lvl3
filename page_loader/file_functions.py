@@ -51,9 +51,11 @@ def save_content(content, parsing_url, directory, resource_type):
     Returns:
           String.
     """
-    result = content
-    element_list = get_local_content(result, resource_type, parsing_url.netloc)
-    bar = Bar('Download: ', max=len(element_list))
+    element_list = get_local_content(content, resource_type, parsing_url.netloc)
+    bar = Bar(
+        'Start download {0} element. \nDownload: '.format(resource_type),
+        max=len(element_list),
+    )
     for element in element_list:
         object_url_data = parser.urlparse(
             element[CONTENT_TYPE[resource_type]['linc']],
@@ -80,7 +82,7 @@ def save_content(content, parsing_url, directory, resource_type):
         )
         bar.next()
     bar.finish()
-    return result
+    return content
 
 
 def write_to_file(path, resource_type, content):
