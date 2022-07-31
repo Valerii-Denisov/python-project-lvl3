@@ -11,7 +11,7 @@ from page_loader import download
 from page_loader.logger_config import LOGGING_CONFIG
 
 logging.config.dictConfig(LOGGING_CONFIG)
-log = logging.getLogger('app_logger')
+log = logging.getLogger('console_logger')
 
 
 def main():
@@ -25,14 +25,22 @@ def main():
     )
     parser.add_argument('address')
     args = parser.parse_args()
-    print('Start downloading page: {0}'.format(args.address))
+    print('Trying to downloading page: {0}'.format(args.address))
     try:
         path = download(args.address, args.output)
     except requests.exceptions.RequestException:
+        log.error(
+            'Find error in request.\n See description in log-file: {0}'.format(
+                os.path.abspath('debug.log'),
+            ),
+        )
         sys.exit(1)
-    except PermissionError:
-        sys.exit(1)
-    except FileNotFoundError:
+    except Exception:
+        log.error(
+            'Find some error.\n See description in log-file: {0}'.format(
+                os.path.abspath('debug.log'),
+            ),
+        )
         sys.exit(1)
     else:
         print('Downloading complete! Path to file: {0}'.format(path))

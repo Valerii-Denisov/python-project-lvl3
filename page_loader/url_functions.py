@@ -36,9 +36,7 @@ def get_raw_data(url):
         raise error_one
     except requests.exceptions.ConnectionError as error_two:
         log_pars.error(
-            'The connection cannot be established.\nError: {0}'.format(
-                error_two,
-            ),
+            'The connection cannot be established. {0}'.format(error_two),
         )
         raise error_two
     return raw_data

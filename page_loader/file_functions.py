@@ -27,12 +27,12 @@ def make_directory(path):
         if not os.path.isdir(path):
             os.mkdir(path)
     except PermissionError as error_one:
-        log_pars.error(
-            'Can not write to directory. Error: {0}'.format(error_one),
+        log_pars.exception(
+            "Can't write to directory. Error: {0}".format(error_one),
         )
         raise error_one
     except FileNotFoundError as error_two:
-        log_pars.error(
+        log_pars.exception(
             'Target directory not found. Error: {0}'.format(error_two),
         )
         raise error_two
@@ -53,10 +53,11 @@ def save_content(content, parsing_url, directory, resource_type):
     """
     element_list = get_local_content(content, resource_type, parsing_url.netloc)
     bar = Bar(
-        'Start download {0} element. \nDownload: '.format(resource_type),
+        'Start download {0} content. Download: '.format(resource_type),
         max=len(element_list),
     )
     for element in element_list:
+        log_pars.info('Trying to download the item: {0}'.format(element[CONTENT_TYPE[resource_type]['linc']]))
         object_url_data = parser.urlparse(
             element[CONTENT_TYPE[resource_type]['linc']],
         )
@@ -81,6 +82,7 @@ def save_content(content, parsing_url, directory, resource_type):
             name,
         )
         bar.next()
+        log_pars.info('The item is downloaded.')
     bar.finish()
     return content
 
