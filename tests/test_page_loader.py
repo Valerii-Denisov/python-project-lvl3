@@ -3,9 +3,9 @@ from page_loader import download
 from page_loader.naming_functions import get_name
 from page_loader.url_functions import get_raw_data
 from page_loader.file_functions import make_directory
+import os
 import requests_mock
 import requests
-
 
 URL = 'https://ru.hexlet.io/courses'
 IMAGE_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
@@ -19,10 +19,11 @@ MOCKING_CSS_FILE = 'tests/fixtures/mocks/css_file.css'
 MODIFIED_FILE = 'tests/fixtures/web_page_mod.html'
 WRONG_FILE_PATH = './home/user'
 WRONG_RULE_FILE_PATH = '/some_filepath'
+TARGET_IMAGE_FILE = 'ru-hexlet-io-assets-professions-nodejs.png'
+TARGET_JS_FILE = 'ru-hexlet-io-packs-js-runtime.js'
+TARGET_CSS_FILE = 'ru-hexlet-io-assets-application.css'
+TARGET_FOLDER = 'ru-hexlet-io-courses_files'
 CODE = {404, 403, 500}
-ERROR_ONE = FileNotFoundError
-ERROR_TWO = PermissionError
-ERROR_TREE = requests.exceptions.RequestException
 
 
 def read_file(file_path, teg='r'):
@@ -37,14 +38,21 @@ def test_get_name():
     assert file_name == correct_name
 
 
-def test_page_download(tmp_path):
-    with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE))
-        m.get(IMAGE_URL, content=read_file(MOCKING_IMAGE, 'rb'))
-        m.get(JS_URL, content=read_file(MOCKING_JS_FILE, 'rb'))
-        m.get(CSS_URL, content=read_file(MOCKING_CSS_FILE, 'rb'))
-        path_file = download(URL, tmp_path)
-        assert read_file(path_file) == read_file(MODIFIED_FILE)
+def test_page_download(requests_mock, tmp_path):
+    requests_mock.get(URL, text=read_file(UNMODIFIED_FILE))
+    requests_mock.get(IMAGE_URL, content=read_file(MOCKING_IMAGE, 'rb'))
+    requests_mock.get(JS_URL, content=read_file(MOCKING_JS_FILE, 'rb'))
+    requests_mock.get(CSS_URL, content=read_file(MOCKING_CSS_FILE, 'rb'))
+    path_file = download(URL, tmp_path)
+    image_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_IMAGE_FILE)
+    css_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_CSS_FILE)
+    js_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_JS_FILE)
+    inner_html_path = os.path.join(tmp_path, TARGET_FOLDER, HTML_FILE_NAME)
+    assert read_file(path_file) == read_file(MODIFIED_FILE)
+    assert read_file(image_path, 'rb') == read_file(MOCKING_IMAGE, 'rb')
+    assert read_file(css_path, 'rb') == read_file(MOCKING_CSS_FILE, 'rb')
+    assert read_file(js_path, 'rb') == read_file(MOCKING_JS_FILE, 'rb')
+    assert read_file(inner_html_path, 'rb') == read_file(UNMODIFIED_FILE, 'rb')
 
 
 @pytest.mark.parametrize('error_code', CODE)
@@ -55,6 +63,7 @@ def test_get_raw_data(error_code):
             assert get_raw_data(URL)
 
 
+'''
 def test_permission_error():
     with requests_mock.Mocker() as m:
         m.get(URL, text=read_file(UNMODIFIED_FILE))
@@ -75,10 +84,12 @@ def test_file_not_found_error():
     'error, wrong_filepath, status_code', [
         (ERROR_ONE, WRONG_FILE_PATH, 200),
         (ERROR_TREE, WRONG_RULE_FILE_PATH, 404),
-    ])
+    ]
+)
 def test_download_error(error, wrong_filepath, status_code):
     with requests_mock.Mocker() as m:
         m.get(URL, text=read_file(UNMODIFIED_FILE), status_code=status_code)
         filepath = wrong_filepath
         with pytest.raises(error):
             assert not download(URL, filepath)
+'''
