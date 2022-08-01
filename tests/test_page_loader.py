@@ -2,7 +2,6 @@ import pytest
 from page_loader import download
 from page_loader.naming_functions import get_name
 import os
-import requests_mock
 import requests
 
 URL = 'https://ru.hexlet.io/courses'
