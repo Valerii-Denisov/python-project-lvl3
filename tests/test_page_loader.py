@@ -25,6 +25,7 @@ ERRORS = {
     requests.exceptions.Timeout,
     requests.exceptions.RequestException,
     requests.exceptions.HTTPError,
+    requests.exceptions.ConnectionError,
 }
 
 
