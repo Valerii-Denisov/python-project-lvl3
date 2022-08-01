@@ -24,6 +24,7 @@ CODE = {404, 403, 500}
 ERRORS = {
     requests.exceptions.Timeout,
     requests.exceptions.RequestException,
+    requests.exceptions.HTTPError,
 }
 
 
@@ -64,7 +65,7 @@ def test_response_with_error(error_code, tmp_path, requests_mock):
 
 
 @pytest.mark.parametrize('error', ERRORS)
-def test_response_with_error(error, tmp_path, requests_mock):
+def test_for_http_error(error, tmp_path, requests_mock):
     requests_mock.get(URL, exc=error)
     with pytest.raises(error):
         assert not download(URL, tmp_path)

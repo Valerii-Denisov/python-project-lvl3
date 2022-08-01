@@ -29,8 +29,8 @@ def get_raw_data(url):
         raw_data.raise_for_status()
     except requests.exceptions.HTTPError as error_one:
         log_pars.error(
-            'The page cannot be loaded.\nError code: {0}'.format(
-                raw_data.status_code,
+            'The page cannot be loaded.\nError: {0}'.format(
+                error_one,
             ),
         )
         raise error_one
