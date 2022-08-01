@@ -1,8 +1,6 @@
 import pytest
 from page_loader import download
 from page_loader.naming_functions import get_name
-from page_loader.url_functions import get_raw_data
-from page_loader.file_functions import make_directory
 import os
 import requests_mock
 import requests
@@ -24,6 +22,10 @@ TARGET_JS_FILE = 'ru-hexlet-io-packs-js-runtime.js'
 TARGET_CSS_FILE = 'ru-hexlet-io-assets-application.css'
 TARGET_FOLDER = 'ru-hexlet-io-courses_files'
 CODE = {404, 403, 500}
+ERRORS = {
+    requests.exceptions.Timeout,
+    requests.exceptions.RequestException,
+}
 
 
 def read_file(file_path, teg='r'):
@@ -56,11 +58,17 @@ def test_page_download(requests_mock, tmp_path):
 
 
 @pytest.mark.parametrize('error_code', CODE)
-def test_get_raw_data(error_code):
-    with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE), status_code=error_code)
-        with pytest.raises(requests.exceptions.HTTPError):
-            assert get_raw_data(URL)
+def test_response_with_error(error_code, tmp_path, requests_mock):
+    requests_mock.get(URL, status_code=error_code)
+    with pytest.raises(Exception):
+        assert download(URL, tmp_path)
+
+
+@pytest.mark.parametrize('error', ERRORS)
+def test_response_with_error(error, tmp_path, requests_mock):
+    requests_mock.get(URL, exc=error)
+    with pytest.raises(error):
+        assert not download(URL, tmp_path)
 
 
 '''
