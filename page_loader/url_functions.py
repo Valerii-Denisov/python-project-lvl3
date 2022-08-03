@@ -82,3 +82,25 @@ def get_local_content(page_soup, resource_type, home_netloc):
         if is_local_content(element, resource_type, home_netloc):
             result.append(element)
     return result
+
+
+def get_source_url(parsing_url, element, resource_type):
+    """
+    Save items from the specified list.
+
+    Parameters:
+        element: tag;
+        parsing_url: string;
+        resource_type: string.
+
+    Returns:
+          String.
+    """
+    object_url_data = parser.urlparse(
+        element[CONTENT_TYPE[resource_type]['linc']],
+    )
+    return '{2}://{0}{1}'.format(
+        parsing_url.netloc,
+        object_url_data.path,
+        parsing_url.scheme,
+    )

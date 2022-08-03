@@ -2,11 +2,14 @@
 
 import logging
 import os
-from urllib import parse as parser
 
 from page_loader.module_dict import CONTENT_TYPE
 from page_loader.naming_functions import get_name
-from page_loader.url_functions import get_local_content, get_raw_data
+from page_loader.url_functions import (
+    get_local_content,
+    get_raw_data,
+    get_source_url,
+)
 from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')
@@ -57,30 +60,22 @@ def save_content(content, parsing_url, directory, resource_type):
         max=len(element_list),
     )
     for element in element_list:
-        log_pars.info('Trying to download the item: {0}'.format(element[CONTENT_TYPE[resource_type]['linc']]))
-        object_url_data = parser.urlparse(
+        log_pars.info('Trying to download the item: {0}'.format(
             element[CONTENT_TYPE[resource_type]['linc']],
-        )
+        ))
         name = get_name(
             element[CONTENT_TYPE[resource_type]['linc']],
             resource_type,
             parsing_url.netloc,
         )
         element_local_path = '{0}/{1}'.format(directory, name)
-        element_url = '{2}://{0}{1}'.format(
-            parsing_url.netloc,
-            object_url_data.path,
-            parsing_url.scheme,
-        )
+        element_url = get_source_url(parsing_url, element, resource_type)
         write_to_file(
             element_local_path,
             resource_type,
             get_raw_data(element_url).content,
         )
-        element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
-            os.path.split(directory)[1],
-            name,
-        )
+        replace_source_link(element, directory, name, resource_type)
         bar.next()
         log_pars.info('The item is downloaded.')
     bar.finish()
@@ -96,8 +91,21 @@ def write_to_file(path, resource_type, content):
         content: string;
         resource_type: string.
     """
-    with open(
-        path,
-        CONTENT_TYPE[resource_type]['write'],
-    ) as write_file:
+    with open(path, CONTENT_TYPE[resource_type]['write']) as write_file:
         write_file.write(content)
+
+
+def replace_source_link(element, directory, name, resource_type):
+    """
+    Save items from the specified list.
+
+    Parameters:
+         element: tag;
+         name: string;
+         directory: string;
+         resource_type: string.
+    """
+    element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
+        os.path.split(directory)[1],
+        name,
+    )
