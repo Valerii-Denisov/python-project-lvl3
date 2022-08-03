@@ -14,8 +14,8 @@ MOCKING_IMAGE = 'tests/fixtures/mocks/nodejs.png'
 MOCKING_JS_FILE = 'tests/fixtures/mocks/js_file.js'
 MOCKING_CSS_FILE = 'tests/fixtures/mocks/css_file.css'
 MODIFIED_FILE = 'tests/fixtures/web_page_mod.html'
-WRONG_FILE_PATH = './home/user'
-WRONG_RULE_FILE_PATH = '/some_filepath'
+WRONG_FILE_PATH = '/home/valerii/some_folder'
+WRONG_RULE_FILE_PATH = '/home'
 TARGET_IMAGE_FILE = 'ru-hexlet-io-assets-professions-nodejs.png'
 TARGET_JS_FILE = 'ru-hexlet-io-packs-js-runtime.js'
 TARGET_CSS_FILE = 'ru-hexlet-io-assets-application.css'
@@ -72,33 +72,13 @@ def test_for_http_error(error, tmp_path, requests_mock):
         assert not download(URL, tmp_path)
 
 
-'''
-def test_permission_error():
-    with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE))
-        filepath = WRONG_RULE_FILE_PATH
-        with pytest.raises(ERROR_TWO):
-            assert make_directory(filepath)
-
-
-def test_file_not_found_error():
-    with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE))
-        filepath = WRONG_FILE_PATH
-        with pytest.raises(ERROR_ONE):
-            assert make_directory(filepath)
-
-
 @pytest.mark.parametrize(
-    'error, wrong_filepath, status_code', [
-        (ERROR_ONE, WRONG_FILE_PATH, 200),
-        (ERROR_TREE, WRONG_RULE_FILE_PATH, 404),
-    ]
+    'error, filepath',
+    [(FileNotFoundError, WRONG_FILE_PATH),
+     (PermissionError, WRONG_RULE_FILE_PATH),
+     ],
 )
-def test_download_error(error, wrong_filepath, status_code):
-    with requests_mock.Mocker() as m:
-        m.get(URL, text=read_file(UNMODIFIED_FILE), status_code=status_code)
-        filepath = wrong_filepath
-        with pytest.raises(error):
-            assert not download(URL, filepath)
-'''
+def test_download_with_local_error(requests_mock, error, filepath):
+    requests_mock.get(URL)
+    with pytest.raises(error):
+        assert not download(URL, filepath)
