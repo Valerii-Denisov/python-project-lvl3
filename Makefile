@@ -23,3 +23,6 @@ test:
 
 test-cover:
 	poetry run pytest --cov=page_loader tests --cov-report xml
+
+test-local-cover:
+	poetry run pytest --cov=page_loader
