@@ -5,7 +5,7 @@ import os
 import re
 from urllib import parse as parser
 
-from page_loader.module_dict import CONTENT_TYPE, FILE_FORMAT
+from page_loader.module_dict import CONTENT_TYPE_TAGS, FILE_FORMAT
 
 log_pars = logging.getLogger('app_logger')
 
@@ -28,10 +28,10 @@ def get_name(raw_address, object_type, home_netloc=''):
     else:
         raw_name = '{0}{1}'.format(home_netloc, url_data.path)
     name = re.sub(r'(/|[.])', '-', raw_name)
-    if object_type in CONTENT_TYPE.keys():
+    if object_type in CONTENT_TYPE_TAGS.keys():
         element_name = re.search(
             r'[a-zA-Z\d-]*{0}'.format(
-                CONTENT_TYPE[object_type]['name_pattern'],
+                CONTENT_TYPE_TAGS[object_type]['name_pattern'],
             ),
             name,
         )

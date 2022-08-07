@@ -3,7 +3,7 @@
 import logging
 import os
 
-from page_loader.module_dict import CONTENT_TYPE
+from page_loader.module_dict import CONTENT_TYPE_TAGS
 from page_loader.naming_functions import get_name
 from page_loader.url_functions import (
     get_local_content,
@@ -41,12 +41,12 @@ def make_directory(path):
         raise error_two
 
 
-def save_content(content, parsing_url, directory, resource_type):
+def save_content(page_soup, parsing_url, directory, resource_type):
     """
     Save items from the specified list.
 
     Parameters:
-        content: string;
+        page_soup: string;
         parsing_url: string;
         directory: string;
         resource_type: string.
@@ -54,17 +54,21 @@ def save_content(content, parsing_url, directory, resource_type):
     Returns:
           String.
     """
-    element_list = get_local_content(content, resource_type, parsing_url.netloc)
+    element_list = get_local_content(
+        page_soup,
+        resource_type,
+        parsing_url.netloc,
+    )
     bar = Bar(
         'Start download {0} content. Download: '.format(resource_type),
         max=len(element_list),
     )
     for element in element_list:
         log_pars.info('Trying to download the item: {0}'.format(
-            element[CONTENT_TYPE[resource_type]['linc']],
+            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
         ))
         name = get_name(
-            element[CONTENT_TYPE[resource_type]['linc']],
+            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
             resource_type,
             parsing_url.netloc,
         )
@@ -72,32 +76,32 @@ def save_content(content, parsing_url, directory, resource_type):
         element_url = get_source_url(parsing_url, element, resource_type)
         write_to_file(
             element_local_path,
-            resource_type,
             get_raw_data(element_url).content,
+            resource_type,
         )
         replace_source_link(element, directory, name, resource_type)
         bar.next()
         log_pars.info('The item is downloaded.')
     bar.finish()
-    return content
+    return page_soup
 
 
-def write_to_file(path, resource_type, content):
+def write_to_file(path, content, resource_type):
     """
-    Save items from the specified list.
+    Write data from file.
 
     Parameters:
         path:string;
         content: string;
         resource_type: string.
     """
-    with open(path, CONTENT_TYPE[resource_type]['write']) as write_file:
+    with open(path, CONTENT_TYPE_TAGS[resource_type]['write']) as write_file:
         write_file.write(content)
 
 
 def replace_source_link(element, directory, name, resource_type):
     """
-    Save items from the specified list.
+    Replace resource references with local ones.
 
     Parameters:
          element: tag;
@@ -105,7 +109,7 @@ def replace_source_link(element, directory, name, resource_type):
          directory: string;
          resource_type: string.
     """
-    element[CONTENT_TYPE[resource_type]['linc']] = os.path.join(
+    element[CONTENT_TYPE_TAGS[resource_type]['linc']] = os.path.join(
         os.path.split(directory)[1],
         name,
     )

@@ -5,7 +5,7 @@ FILE_FORMAT = types.MappingProxyType({
     'directory': '_files',
     'html_page': '.html',
 })
-CONTENT_TYPE = types.MappingProxyType({
+CONTENT_TYPE_TAGS = types.MappingProxyType({
     'images': dict(
         tag='img',
         pattern=r'png|jpg',

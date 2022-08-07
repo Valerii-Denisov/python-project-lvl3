@@ -37,7 +37,7 @@ def main():
         sys.exit(1)
     except Exception:
         log.error(
-            'Find some error.\n See description in log-file: {0}'.format(
+            'Find some local error.\n See description in log-file: {0}'.format(
                 os.path.abspath('debug.log'),
             ),
         )

@@ -5,14 +5,14 @@ import re
 from urllib import parse as parser
 
 import requests
-from page_loader.module_dict import CONTENT_TYPE
+from page_loader.module_dict import CONTENT_TYPE_TAGS
 
 log_pars = logging.getLogger('app_logger')
 
 
 def get_raw_data(url):
     """
-    Load data from page.
+    Load data from URL-address.
 
     Parameters:
         url: string.
@@ -22,7 +22,7 @@ def get_raw_data(url):
         error_two: requests.exceptions.ConnectionError.
 
     Returns:
-          Page data.
+          Raw page data.
     """
     try:
         raw_data = requests.get(url)
@@ -44,7 +44,7 @@ def get_raw_data(url):
 
 def is_local_content(element, resource_type, home_netloc):
     """
-    Build dict is local element.
+    Check whether the resource is local or not.
 
     Parameters:
         element: bs4.element.Tag,
@@ -52,22 +52,22 @@ def is_local_content(element, resource_type, home_netloc):
         home_netloc: string.
 
     Returns:
-          Resource list.
+          True or false.
     """
-    if CONTENT_TYPE[resource_type]['linc'] in element.attrs.keys():
+    if CONTENT_TYPE_TAGS[resource_type]['linc'] in element.attrs.keys():
         if re.search(
-            CONTENT_TYPE[resource_type]['pattern'],
-            element[CONTENT_TYPE[resource_type]['linc']],
+            CONTENT_TYPE_TAGS[resource_type]['pattern'],
+            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
         ):
             object_url_data = parser.urlparse(
-                element[CONTENT_TYPE[resource_type]['linc']],
+                element[CONTENT_TYPE_TAGS[resource_type]['linc']],
             )
             return object_url_data.netloc in {'', home_netloc}
 
 
 def get_local_content(page_soup, resource_type, home_netloc):
     """
-    Build dict is local element.
+    Build a list of local elements.
 
     Parameters:
         page_soup: string,
@@ -78,7 +78,7 @@ def get_local_content(page_soup, resource_type, home_netloc):
           Resource list.
     """
     result = []
-    for element in page_soup.find_all(CONTENT_TYPE[resource_type]['tag']):
+    for element in page_soup.find_all(CONTENT_TYPE_TAGS[resource_type]['tag']):
         if is_local_content(element, resource_type, home_netloc):
             result.append(element)
     return result
@@ -86,7 +86,7 @@ def get_local_content(page_soup, resource_type, home_netloc):
 
 def get_source_url(parsing_url, element, resource_type):
     """
-    Save items from the specified list.
+    Build the url of the element.
 
     Parameters:
         element: tag;
@@ -94,10 +94,10 @@ def get_source_url(parsing_url, element, resource_type):
         resource_type: string.
 
     Returns:
-          String.
+          URL-address.
     """
     object_url_data = parser.urlparse(
-        element[CONTENT_TYPE[resource_type]['linc']],
+        element[CONTENT_TYPE_TAGS[resource_type]['linc']],
     )
     return '{2}://{0}{1}'.format(
         parsing_url.netloc,
