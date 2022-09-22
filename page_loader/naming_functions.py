@@ -12,6 +12,7 @@ log_pars = logging.getLogger('app_logger')
 
 def get_name(raw_address, object_type, home_netloc=''):
     """
+    разбить на две функции: одна под имена файлов другая под имена директорий
     Build file name.
 
     Parameters:

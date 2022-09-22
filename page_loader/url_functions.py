@@ -44,6 +44,7 @@ def get_raw_data(url):
 
 def is_local_content(element, resource_type, home_netloc):
     """
+    переписать через проверку нетлока у юрла ресурса и юрла корневой страницы
     Check whether the resource is local or not.
 
     Parameters:

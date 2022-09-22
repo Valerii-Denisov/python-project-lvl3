@@ -43,6 +43,7 @@ def make_directory(path):
 
 def save_content(page_soup, parsing_url, directory, resource_type):
     """
+    упразднить, весь функционал в донвлоад перенести (первоочередное остальные замечания завзаны на это
     Save items from the specified list.
 
     Parameters:
