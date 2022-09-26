@@ -39,7 +39,7 @@ def download(saving_url, local_path):
         element_list = get_local_content(
             page_html_tree,
             content_tag,
-            parser.urlparse(saving_url).netloc,
+            saving_url,
         )
         bar = Bar(
             'Start download {0} content. Download: '.format(content_tag),

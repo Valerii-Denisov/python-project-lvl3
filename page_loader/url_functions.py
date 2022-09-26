@@ -42,45 +42,45 @@ def get_raw_data(url):
     return raw_data
 
 
-def is_local_content(element, resource_type, home_netloc):
+def is_local_content(element, base_url):
     """
     Check whether the resource is local or not.
 
     Parameters:
         element: bs4.element.Tag,
-        resource_type: string,
-        home_netloc: string.
+        base_url: string.
 
     Returns:
           True or false.
     """
-    if CONTENT_TYPE_TAGS[resource_type]['linc'] in element.attrs.keys():
-        if re.search(
-            CONTENT_TYPE_TAGS[resource_type]['pattern'],
-            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
-        ):
-            object_url_data = parser.urlparse(
-                element[CONTENT_TYPE_TAGS[resource_type]['linc']],
-            )
-            return object_url_data.netloc in {'', home_netloc}
+    resource_netloc = parser.urlparse(element).netloc
+    base_netloc = parser.urlparse(base_url).netloc
+    return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, resource_type, home_netloc):
+def get_local_content(page_soup, resource_type, base_url):
     """
     Build a list of local elements.
 
     Parameters:
         page_soup: string,
         resource_type: string,
-        home_netloc: string.
+        base_url: string.
 
     Returns:
           Resource list.
     """
     result = []
     for element in page_soup.find_all(CONTENT_TYPE_TAGS[resource_type]['tag']):
-        if is_local_content(element, resource_type, home_netloc):
-            result.append(element)
+        if re.search(
+            CONTENT_TYPE_TAGS[resource_type]['pattern'],
+            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+        ):
+            if is_local_content(
+                element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+                base_url,
+            ):
+                result.append(element)
     return result
 
 
