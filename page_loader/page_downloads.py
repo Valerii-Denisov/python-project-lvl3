@@ -10,7 +10,11 @@ from page_loader.file_functions import (
     write_to_file,
 )
 from page_loader.module_dict import CONTENT_TYPE_TAGS
-from page_loader.naming_functions import get_name, get_path
+from page_loader.naming_functions import (
+    get_name,
+    get_path,
+    get_url_with_netloc,
+)
 from page_loader.url_functions import (
     get_local_content,
     get_raw_data,
@@ -49,10 +53,13 @@ def download(saving_url, local_path):
             log_pars.info('Trying to download the item: {0}'.format(
                 element[CONTENT_TYPE_TAGS[content_tag]['linc']],
             ))
-            name = get_name(
+            full_url = get_url_with_netloc(
                 element[CONTENT_TYPE_TAGS[content_tag]['linc']],
-                content_tag,
                 parser.urlparse(saving_url).netloc,
+            )
+            name = get_name(
+                full_url,
+                content_tag,
             )
             element_local_path = '{0}/{1}'.format(target_directory_path, name)
             element_url = get_source_url(

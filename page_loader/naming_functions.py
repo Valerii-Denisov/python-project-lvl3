@@ -10,6 +10,25 @@ from page_loader.module_dict import CONTENT_TYPE_TAGS, FILE_FORMAT
 log_pars = logging.getLogger('app_logger')
 
 
+def get_url_with_netloc(raw_address, home_netloc):
+    """
+    Build full url.
+
+    Parameters:
+        raw_address: string;
+        home_netloc: string.
+
+    Returns:
+          File name.
+    """
+    url_data = parser.urlparse(raw_address)
+    if url_data.netloc:
+        raw_url = '{0}{1}'.format(url_data.netloc, url_data.path)
+    else:
+        raw_url = '{0}{1}'.format(home_netloc, url_data.path)
+    return raw_url
+
+
 def get_name(raw_address, object_type, home_netloc=''):
     """
     Build file name.
@@ -23,10 +42,7 @@ def get_name(raw_address, object_type, home_netloc=''):
           File name.
     """
     url_data = parser.urlparse(raw_address)
-    if url_data.netloc:
-        raw_name = '{0}{1}'.format(url_data.netloc, url_data.path)
-    else:
-        raw_name = '{0}{1}'.format(home_netloc, url_data.path)
+    raw_name = '{0}{1}'.format(url_data.netloc, url_data.path)
     name = re.sub(r'(/|[.])', '-', raw_name)
     if object_type in CONTENT_TYPE_TAGS.keys():
         element_name = re.search(
