@@ -1,6 +1,6 @@
 import pytest
 from page_loader import download
-from page_loader.naming_functions import get_name
+from page_loader.naming_functions import get_file_name
 import os
 import requests
 
@@ -37,7 +37,7 @@ def read_file(file_path, teg='r'):
 
 def test_get_name():
     correct_name = HTML_FILE_NAME
-    file_name = get_name(URL, 'html_page')
+    file_name = get_file_name(URL)
     assert file_name == correct_name
 
 

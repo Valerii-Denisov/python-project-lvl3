@@ -1,90 +1,53 @@
 """The module contains functions for name and path of web pages element."""
 
-import logging
 import os
 import re
 from urllib import parse as parser
 
-from page_loader.module_dict import CONTENT_TYPE_TAGS, FILE_FORMAT
 
-log_pars = logging.getLogger('app_logger')
-
-
-def get_url_with_netloc(raw_address, home_netloc):
+def get_folder_name(raw_address):
     """
-    Build full url.
+    Build folder name.
 
     Parameters:
-        raw_address: string;
-        home_netloc: string.
+        raw_address: string.
 
     Returns:
-          File name.
+          Folder name.
     """
     url_data = parser.urlparse(raw_address)
-    if url_data.netloc:
-        raw_url = '{0}{1}'.format(url_data.netloc, url_data.path)
-    else:
-        raw_url = '{0}{1}'.format(home_netloc, url_data.path)
-    return raw_url
+    raw_name = '{0}{1}'.format(url_data.netloc, url_data.path)
+    name = re.sub(r'(/|[.])', '-', raw_name)
+    return '{0}{1}'.format(name, '_files')
 
 
-def get_name(raw_address, object_type, home_netloc=''):
+def get_file_name(raw_address):
     """
     Build file name.
 
     Parameters:
-        raw_address: string;
-        object_type: string;
-        home_netloc: string.
+        raw_address: string.
 
     Returns:
           File name.
     """
     url_data = parser.urlparse(raw_address)
     raw_name = '{0}{1}'.format(url_data.netloc, url_data.path)
+    _, file_format = os.path.splitext(raw_address)
     name = re.sub(r'(/|[.])', '-', raw_name)
-    if object_type in CONTENT_TYPE_TAGS.keys():
-        element_name = re.search(
-            r'[a-zA-Z\d-]*{0}'.format(
-                CONTENT_TYPE_TAGS[object_type]['name_pattern'],
-            ),
-            name,
-        )
+    if re.search(r'css$', name):
         return '{0}{1}'.format(
-            element_name.group(),
-            get_file_format(url_data.path, object_type),
+            re.search(r'[a-zA-Z\d-]*(?=-css)', name).group(),
+            file_format,
         )
-    return '{0}{1}'.format(name, get_file_format(url_data.path, object_type))
-
-
-def get_path(url, local_path, source_type):
-    """
-    Build the full path of the element.
-
-    Parameters:
-        url: string,
-        local_path: string,
-        source_type: string.
-
-    Returns:
-          Path to element.
-    """
-    return os.path.join(local_path, get_name(url, source_type))
-
-
-def get_file_format(path, object_type):
-    """
-    Get file format.
-
-    Parameters:
-        path: string;
-        object_type: string.
-
-    Returns:
-          file_format: string.
-    """
-    _, file_format = os.path.splitext(path)
-    if file_format:
-        return file_format
-    return FILE_FORMAT[object_type]
+    elif re.search(r'(png|jpg)$', name):
+        return '{0}{1}'.format(
+            re.search(r'[a-zA-Z\d-]*(?=-jpg|-png)', name).group(),
+            file_format,
+        )
+    elif re.search(r'js$', name):
+        return '{0}{1}'.format(
+            re.search(r'[a-zA-Z\d-]*(?=-js)', name).group(),
+            file_format,
+        )
+    return '{0}{1}'.format(re.search(r'[a-zA-Z\d-]*', name).group(), '.html')
