@@ -10,9 +10,9 @@ from page_loader.file_functions import (
     replace_source_link,
     write_to_file,
 )
-from page_loader.module_dict import CONTENT_TYPE_TAGS
 from page_loader.naming_functions import get_file_name, get_folder_name
 from page_loader.url_functions import (
+    get_element_attributes,
     get_local_content,
     get_raw_data,
     get_source_url,
@@ -40,22 +40,26 @@ def download(saving_url, local_path):
         get_folder_name(saving_url),
     )
     make_directory(target_directory_path)
-    for content_tag in CONTENT_TYPE_TAGS.keys():
+    for content_type in ('images', 'css', 'script', 'html_page'):
+        tag, pattern, linc = get_element_attributes(content_type)
         element_list = get_local_content(
             page_html_tree,
-            content_tag,
+            tag,
+            pattern,
+            linc,
             saving_url,
         )
+        log_pars.info(element_list)
         bar = Bar(
-            'Start download {0} content. Download: '.format(content_tag),
+            'Start download {0} content. Download: '.format(content_type),
             max=len(element_list),
         )
         for element in element_list:
             log_pars.info('Trying to download the item: {0}'.format(
-                element[CONTENT_TYPE_TAGS[content_tag]['linc']],
+                element[linc],
             ))
             full_url = get_url_with_netloc(
-                element[CONTENT_TYPE_TAGS[content_tag]['linc']],
+                element[linc],
                 parser.urlparse(saving_url).netloc,
             )
             name = get_file_name(full_url)
@@ -63,7 +67,7 @@ def download(saving_url, local_path):
             element_url = get_source_url(
                 parser.urlparse(saving_url),
                 element,
-                content_tag,
+                linc,
             )
             write_to_file(
                 element_local_path,
@@ -73,7 +77,7 @@ def download(saving_url, local_path):
                 element,
                 target_directory_path,
                 name,
-                content_tag,
+                linc,
             )
             bar.next()
             log_pars.info('The item is downloaded.')

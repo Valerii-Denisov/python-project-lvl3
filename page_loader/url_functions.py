@@ -5,7 +5,6 @@ import re
 from urllib import parse as parser
 
 import requests
-from page_loader.module_dict import CONTENT_TYPE_TAGS
 
 log_pars = logging.getLogger('app_logger')
 
@@ -58,46 +57,48 @@ def is_local_content(element, base_url):
     return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, resource_type, base_url):
+def get_local_content(page_soup, tag, pattern, linc, base_url):
     """
     Build a list of local elements.
 
     Parameters:
         page_soup: string,
-        resource_type: string,
+        tag: string,
+        pattern: string,
+        linc: string,
         base_url: string.
 
     Returns:
           Resource list.
     """
     result = []
-    for element in page_soup.find_all(CONTENT_TYPE_TAGS[resource_type]['tag']):
+    for element in page_soup.find_all(tag):
         if re.search(
-            CONTENT_TYPE_TAGS[resource_type]['pattern'],
-            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+            pattern,
+            element[linc],
         ):
             if is_local_content(
-                element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+                element[linc],
                 base_url,
             ):
                 result.append(element)
     return result
 
 
-def get_source_url(parsing_url, element, resource_type):
+def get_source_url(parsing_url, element, linc):
     """
     Build the url of the element.
 
     Parameters:
         element: tag;
         parsing_url: string;
-        resource_type: string.
+        linc: string.
 
     Returns:
           URL-address.
     """
     object_url_data = parser.urlparse(
-        element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+        element[linc],
     )
     return '{2}://{0}{1}'.format(
         parsing_url.netloc,
@@ -123,3 +124,34 @@ def get_url_with_netloc(raw_address, home_netloc):
     else:
         raw_url = '{0}{1}'.format(home_netloc, url_data.path)
     return raw_url
+
+
+def get_element_attributes(resource_type):
+    """
+    Return attributes of HTML element.
+
+    Parameters:
+        resource_type: string.
+
+    Returns:
+        tag: string,
+        pattern: string,
+        linc: string.
+    """
+    if resource_type == 'images':
+        tag = 'img'
+        pattern = r'png|jpg'
+        linc = 'src'
+    elif resource_type == 'css':
+        tag = 'link'
+        pattern = r'css'
+        linc = 'href'
+    elif resource_type == 'script':
+        tag = 'script'
+        pattern = r'js'
+        linc = 'src'
+    else:
+        tag = 'link'
+        pattern = r'^(?!.*css).|html'
+        linc = 'href'
+    return tag, pattern, linc

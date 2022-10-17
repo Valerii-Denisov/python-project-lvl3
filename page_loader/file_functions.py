@@ -3,8 +3,6 @@
 import logging
 import os
 
-from page_loader.module_dict import CONTENT_TYPE_TAGS
-
 log_pars = logging.getLogger('app_logger')
 
 
@@ -46,7 +44,7 @@ def write_to_file(path, content):
         write_file.write(content)
 
 
-def replace_source_link(element, directory, name, resource_type):
+def replace_source_link(element, directory, name, linc):
     """
     Replace resource references with local ones.
 
@@ -54,9 +52,9 @@ def replace_source_link(element, directory, name, resource_type):
          element: tag;
          name: string;
          directory: string;
-         resource_type: string.
+         linc: string.
     """
-    element[CONTENT_TYPE_TAGS[resource_type]['linc']] = os.path.join(
+    element[linc] = os.path.join(
         os.path.split(directory)[1],
         name,
     )
