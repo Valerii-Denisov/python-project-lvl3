@@ -5,7 +5,6 @@ import re
 from urllib import parse as parser
 
 import requests
-from page_loader.module_dict import CONTENT_TYPE_TAGS
 
 log_pars = logging.getLogger('app_logger')
 
@@ -42,66 +41,118 @@ def get_raw_data(url):
     return raw_data
 
 
-def is_local_content(element, resource_type, home_netloc):
+def is_local_content(element, base_url):
     """
     переписать через проверку нетлока у юрла ресурса и юрла корневой страницы
     Check whether the resource is local or not.
 
     Parameters:
         element: bs4.element.Tag,
-        resource_type: string,
-        home_netloc: string.
+        base_url: string.
 
     Returns:
           True or false.
     """
-    if CONTENT_TYPE_TAGS[resource_type]['linc'] in element.attrs.keys():
-        if re.search(
-            CONTENT_TYPE_TAGS[resource_type]['pattern'],
-            element[CONTENT_TYPE_TAGS[resource_type]['linc']],
-        ):
-            object_url_data = parser.urlparse(
-                element[CONTENT_TYPE_TAGS[resource_type]['linc']],
-            )
-            return object_url_data.netloc in {'', home_netloc}
+    resource_netloc = parser.urlparse(element).netloc
+    base_netloc = parser.urlparse(base_url).netloc
+    return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, resource_type, home_netloc):
+def get_local_content(page_soup, tag, pattern, linc, base_url):
     """
     Build a list of local elements.
 
     Parameters:
         page_soup: string,
-        resource_type: string,
-        home_netloc: string.
+        tag: string,
+        pattern: string,
+        linc: string,
+        base_url: string.
 
     Returns:
           Resource list.
     """
     result = []
-    for element in page_soup.find_all(CONTENT_TYPE_TAGS[resource_type]['tag']):
-        if is_local_content(element, resource_type, home_netloc):
-            result.append(element)
+    for element in page_soup.find_all(tag):
+        if re.search(
+            pattern,
+            element[linc],
+        ):
+            if is_local_content(
+                element[linc],
+                base_url,
+            ):
+                result.append(element)
     return result
 
 
-def get_source_url(parsing_url, element, resource_type):
+def get_source_url(parsing_url, element, linc):
     """
     Build the url of the element.
 
     Parameters:
         element: tag;
         parsing_url: string;
-        resource_type: string.
+        linc: string.
 
     Returns:
           URL-address.
     """
     object_url_data = parser.urlparse(
-        element[CONTENT_TYPE_TAGS[resource_type]['linc']],
+        element[linc],
     )
     return '{2}://{0}{1}'.format(
         parsing_url.netloc,
         object_url_data.path,
         parsing_url.scheme,
     )
+
+
+def get_url_with_netloc(raw_address, home_netloc):
+    """
+    Build full url.
+
+    Parameters:
+        raw_address: string;
+        home_netloc: string.
+
+    Returns:
+          File name.
+    """
+    url_data = parser.urlparse(raw_address)
+    if url_data.netloc:
+        raw_url = '{0}{1}'.format(url_data.netloc, url_data.path)
+    else:
+        raw_url = '{0}{1}'.format(home_netloc, url_data.path)
+    return raw_url
+
+
+def get_element_attributes(resource_type):
+    """
+    Return attributes of HTML element.
+
+    Parameters:
+        resource_type: string.
+
+    Returns:
+        tag: string,
+        pattern: string,
+        linc: string.
+    """
+    if resource_type == 'images':
+        tag = 'img'
+        pattern = r'png|jpg'
+        linc = 'src'
+    elif resource_type == 'css':
+        tag = 'link'
+        pattern = r'css'
+        linc = 'href'
+    elif resource_type == 'script':
+        tag = 'script'
+        pattern = r'js'
+        linc = 'src'
+    else:
+        tag = 'link'
+        pattern = r'^(?!.*css).|html'
+        linc = 'href'
+    return tag, pattern, linc
