@@ -43,7 +43,6 @@ def get_raw_data(url):
 
 def is_local_content(element, base_url):
     """
-    переписать через проверку нетлока у юрла ресурса и юрла корневой страницы
     Check whether the resource is local or not.
 
     Parameters:
@@ -58,7 +57,7 @@ def is_local_content(element, base_url):
     return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, tag, pattern, linc, base_url):
+def get_local_content(page_soup, tag, base_url):
     """
     Build a list of local elements.
 
@@ -73,16 +72,29 @@ def get_local_content(page_soup, tag, pattern, linc, base_url):
           Resource list.
     """
     result = []
+    if tag == 'img' or tag == 'script':
+        linc = 'src'
+    else:
+        linc = 'href'
     for element in page_soup.find_all(tag):
-        if re.search(
-            pattern,
-            element[linc],
-        ):
+        log_pars.info('bla-bla1: {}'.format(element))
+        if element[linc].split('.')[-1] in ('jpg', 'png', 'css', 'js', 'html'):
             if is_local_content(
                 element[linc],
                 base_url,
             ):
                 result.append(element)
+        else:
+            if re.search(
+                r'^(?!.*css).',
+                element[linc],
+            ):
+                if is_local_content(
+                    element[linc],
+                    base_url,
+                ):
+                    result.append(element)
+    log_pars.info('bla-bla: {}'.format(result))
     return result
 
 

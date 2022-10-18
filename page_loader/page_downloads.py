@@ -40,13 +40,11 @@ def download(saving_url, local_path):
         get_folder_name(saving_url),
     )
     make_directory(target_directory_path)
-    for content_type in ('images', 'css', 'script', 'html_page'):
-        tag, pattern, linc = get_element_attributes(content_type)
+    for content_type in ('img', 'script', 'link'):
+        '''tag, pattern, linc = get_element_attributes(content_type)'''
         element_list = get_local_content(
             page_html_tree,
-            tag,
-            pattern,
-            linc,
+            content_type,
             saving_url,
         )
         log_pars.info(element_list)

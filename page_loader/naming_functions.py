@@ -23,7 +23,6 @@ def get_folder_name(raw_address):
 
 def get_file_name(raw_address):
     """
-    разбить на две функции: одна под имена файлов другая под имена директорий
     Build file name.
 
     Parameters:
