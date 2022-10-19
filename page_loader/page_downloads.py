@@ -4,6 +4,7 @@ import logging
 import os
 from urllib import parse as parser
 
+import requests
 from bs4 import BeautifulSoup
 from page_loader.file_functions import (
     make_directory,
@@ -41,13 +42,13 @@ def download(saving_url, local_path):
     )
     make_directory(target_directory_path)
     for content_type in ('img', 'script', 'link'):
-        '''tag, pattern, linc = get_element_attributes(content_type)'''
+        linc = get_element_attributes(content_type)
         element_list = get_local_content(
             page_html_tree,
             content_type,
+            linc,
             saving_url,
         )
-        log_pars.info(element_list)
         bar = Bar(
             'Start download {0} content. Download: '.format(content_type),
             max=len(element_list),
@@ -67,16 +68,22 @@ def download(saving_url, local_path):
                 element,
                 linc,
             )
-            write_to_file(
-                element_local_path,
-                get_raw_data(element_url).content,
-            )
-            replace_source_link(
-                element,
-                target_directory_path,
-                name,
-                linc,
-            )
+            try:
+                content = get_raw_data(element_url).content
+            except requests.exceptions.RequestException as error_one:
+                log_pars.error(
+                    'The item cannot be loaded.\nError: {0}'.format(
+                        error_one,
+                    ),
+                )
+            else:
+                write_to_file(element_local_path, content)
+                replace_source_link(
+                    element,
+                    target_directory_path,
+                    name,
+                    linc,
+                )
             bar.next()
             log_pars.info('The item is downloaded.')
         bar.finish()

@@ -57,14 +57,13 @@ def is_local_content(element, base_url):
     return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, tag, base_url):
+def get_local_content(page_soup, tag, linc, base_url):
     """
     Build a list of local elements.
 
     Parameters:
         page_soup: string,
         tag: string,
-        pattern: string,
         linc: string,
         base_url: string.
 
@@ -72,29 +71,13 @@ def get_local_content(page_soup, tag, base_url):
           Resource list.
     """
     result = []
-    if tag == 'img' or tag == 'script':
-        linc = 'src'
-    else:
-        linc = 'href'
     for element in page_soup.find_all(tag):
-        log_pars.info('bla-bla1: {}'.format(element))
-        if element[linc].split('.')[-1] in ('jpg', 'png', 'css', 'js', 'html'):
-            if is_local_content(
-                element[linc],
-                base_url,
-            ):
+        if is_local_content(element[linc], base_url):
+            element_file_format = element[linc].split('.')[-1]
+            if element_file_format in {'jpg', 'png', 'css', 'js', 'html'}:
                 result.append(element)
-        else:
-            if re.search(
-                r'^(?!.*css).',
-                element[linc],
-            ):
-                if is_local_content(
-                    element[linc],
-                    base_url,
-                ):
-                    result.append(element)
-    log_pars.info('bla-bla: {}'.format(result))
+            elif re.search(r'^(?!.*css).', element[linc]):
+                result.append(element)
     return result
 
 
@@ -139,32 +122,18 @@ def get_url_with_netloc(raw_address, home_netloc):
     return raw_url
 
 
-def get_element_attributes(resource_type):
+def get_element_attributes(resource_tag):
     """
     Return attributes of HTML element.
 
     Parameters:
-        resource_type: string.
+        resource_tag: string.
 
     Returns:
-        tag: string,
-        pattern: string,
         linc: string.
     """
-    if resource_type == 'images':
-        tag = 'img'
-        pattern = r'png|jpg'
-        linc = 'src'
-    elif resource_type == 'css':
-        tag = 'link'
-        pattern = r'css'
-        linc = 'href'
-    elif resource_type == 'script':
-        tag = 'script'
-        pattern = r'js'
+    if resource_tag in {'img', 'script'}:
         linc = 'src'
     else:
-        tag = 'link'
-        pattern = r'^(?!.*css).|html'
         linc = 'href'
-    return tag, pattern, linc
+    return linc

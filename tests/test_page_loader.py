@@ -58,6 +58,24 @@ def test_page_download(requests_mock, tmp_path):
     assert read_file(inner_html_path, 'rb') == read_file(UNMODIFIED_FILE, 'rb')
 
 
+'''def test_page_download_with_error(requests_mock, tmp_path):
+    requests_mock.get(URL, text=read_file(UNMODIFIED_FILE))
+    requests_mock.get(IMAGE_URL, status_code=404)
+    requests_mock.get(JS_URL, content=read_file(MOCKING_JS_FILE, 'rb'))
+    requests_mock.get(CSS_URL, content=read_file(MOCKING_CSS_FILE, 'rb'))
+    path_file = download(URL, tmp_path)
+    image_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_IMAGE_FILE)
+    css_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_CSS_FILE)
+    js_path = os.path.join(tmp_path, TARGET_FOLDER, TARGET_JS_FILE)
+    inner_html_path = os.path.join(tmp_path, TARGET_FOLDER, HTML_FILE_NAME)
+    assert read_file(path_file) == read_file(MODIFIED_FILE)
+    assert read_file(image_path, 'rb') == read_file(MOCKING_IMAGE, 'rb')
+    assert read_file(css_path, 'rb') == read_file(MOCKING_CSS_FILE, 'rb')
+    assert read_file(js_path, 'rb') == read_file(MOCKING_JS_FILE, 'rb')
+    assert read_file(inner_html_path, 'rb') == read_file(UNMODIFIED_FILE, 'rb')
+'''
+
+
 @pytest.mark.parametrize('error_code', CODE)
 def test_response_with_error(error_code, tmp_path, requests_mock):
     requests_mock.get(URL, status_code=error_code)
