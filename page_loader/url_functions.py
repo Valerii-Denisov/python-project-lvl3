@@ -18,7 +18,8 @@ def get_raw_data(url):
 
     Raises:
         error_one: requests.exceptions.HTTPError,
-        error_two: requests.exceptions.ConnectionError.
+        error_two: requests.exceptions.ConnectionError,
+        error_three: requests.exceptions.Timeout.
 
     Returns:
           Raw page data.
@@ -27,17 +28,14 @@ def get_raw_data(url):
         raw_data = requests.get(url)
         raw_data.raise_for_status()
     except requests.exceptions.HTTPError as error_one:
-        log_pars.error(
-            'The page cannot be loaded.\nError: {0}'.format(
-                error_one,
-            ),
-        )
+        log_pars.debug('The item cannot be loaded. Find HTTP error')
         raise error_one
     except requests.exceptions.ConnectionError as error_two:
-        log_pars.error(
-            'The connection cannot be established. {0}'.format(error_two),
-        )
+        log_pars.debug('The connection cannot be established.')
         raise error_two
+    except requests.exceptions.Timeout as error_three:
+        log_pars.debug('The time for connection is over.')
+        raise error_three
     return raw_data
 
 

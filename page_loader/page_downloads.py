@@ -71,7 +71,7 @@ def download(saving_url, local_path):
             try:
                 content = get_raw_data(element_url).content
             except requests.exceptions.RequestException as error_one:
-                log_pars.error(
+                log_pars.warning(
                     'The item cannot be loaded.\nError: {0}'.format(
                         error_one,
                     ),

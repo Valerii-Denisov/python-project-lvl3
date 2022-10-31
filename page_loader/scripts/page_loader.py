@@ -28,18 +28,23 @@ def main():
     print('Trying to downloading page: {0}'.format(args.address))
     try:
         path = download(args.address, args.output)
-    except requests.exceptions.RequestException:
+    except requests.exceptions.HTTPError:
+        log.critical('Page cannot be loaded. Find HTTP error.')
+        sys.exit(1)
+    except requests.exceptions.ConnectionError:
+        log.critical('A Connection error occurred.')
+        sys.exit(1)
+    except requests.exceptions.Timeout:
+        log.critical('The request timed out.')
+        sys.exit(1)
+    except PermissionError:
         log.error(
-            'Find error in request.\n See description in log-file: {0}'.format(
-                os.path.abspath('debug.log'),
-            ),
+            'Cannot write to directory, check permission for directory.',
         )
         sys.exit(1)
-    except Exception:
+    except FileNotFoundError:
         log.error(
-            'Find some local error.\n See description in log-file: {0}'.format(
-                os.path.abspath('debug.log'),
-            ),
+            'Target directory not found, check path to directory.',
         )
         sys.exit(1)
     else:

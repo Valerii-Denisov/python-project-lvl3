@@ -16,7 +16,7 @@ LOGGING_CONFIG = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'standard_console',
             'stream': sys.stderr,
@@ -34,7 +34,7 @@ LOGGING_CONFIG = {
             'handlers': ['file_loger'],
         },
         'console_logger': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console'],
         },
     },

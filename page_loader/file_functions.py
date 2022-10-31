@@ -21,12 +21,12 @@ def make_directory(path):
         if not os.path.isdir(path):
             os.mkdir(path)
     except PermissionError as error_one:
-        log_pars.exception(
+        log_pars.debug(
             "Can't write to directory. Error: {0}".format(error_one),
         )
         raise error_one
     except FileNotFoundError as error_two:
-        log_pars.exception(
+        log_pars.debug(
             'Target directory not found. Error: {0}'.format(error_two),
         )
         raise error_two
