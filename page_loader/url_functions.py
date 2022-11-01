@@ -50,9 +50,10 @@ def is_local_content(element, base_url):
     Returns:
           True or false.
     """
-    resource_netloc = parser.urlparse(element).netloc
-    base_netloc = parser.urlparse(base_url).netloc
-    return resource_netloc in {'', base_netloc}
+    if element:
+        resource_netloc = parser.urlparse(element).netloc
+        base_netloc = parser.urlparse(base_url).netloc
+        return resource_netloc in {'', base_netloc}
 
 
 def get_local_content(page_soup, tag, linc, base_url):
@@ -70,7 +71,7 @@ def get_local_content(page_soup, tag, linc, base_url):
     """
     result = []
     for element in page_soup.find_all(tag):
-        if is_local_content(element[linc], base_url):
+        if is_local_content(element.get(linc), base_url):
             element_file_format = element[linc].split('.')[-1]
             if element_file_format in {'jpg', 'png', 'css', 'js', 'html'}:
                 result.append(element)

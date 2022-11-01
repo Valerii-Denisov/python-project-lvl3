@@ -31,7 +31,7 @@ LOGGING_CONFIG = {
     'loggers': {
         'app_logger': {
             'level': 'DEBUG',
-            'handlers': ['file_loger'],
+            'handlers': ['file_loger', 'console'],
         },
         'console_logger': {
             'level': 'INFO',

@@ -54,7 +54,7 @@ def download(saving_url, local_path):
             max=len(element_list),
         )
         for element in element_list:
-            log_pars.info('Trying to download the item: {0}'.format(
+            log_pars.info('\nTrying to download the item: {0}'.format(
                 element[linc],
             ))
             full_url = get_url_with_netloc(
@@ -72,7 +72,7 @@ def download(saving_url, local_path):
                 content = get_raw_data(element_url).content
             except requests.exceptions.RequestException as error_one:
                 log_pars.warning(
-                    'The item cannot be loaded.\nError: {0}'.format(
+                    'WARNING! The item cannot be loaded.\nError: {0}'.format(
                         error_one,
                     ),
                 )
@@ -84,8 +84,8 @@ def download(saving_url, local_path):
                     name,
                     linc,
                 )
-            bar.next()
-            log_pars.info('The item is downloaded.')
+                log_pars.info('The item is downloaded.')
+                bar.next()
         bar.finish()
     html_file_path = os.path.join(local_path, get_file_name(saving_url))
     with open(html_file_path, 'w') as write_file:
