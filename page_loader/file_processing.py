@@ -42,19 +42,3 @@ def write_to_file(path, content):
     """
     with open(path, 'wb') as write_file:
         write_file.write(content)
-
-
-def replace_source_link(element, directory, name, linc):
-    """
-    Replace resource references with local ones.
-
-    Parameters:
-         element: tag;
-         name: string;
-         directory: string;
-         linc: string.
-    """
-    element[linc] = os.path.join(
-        os.path.split(directory)[1],
-        name,
-    )

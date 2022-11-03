@@ -6,19 +6,15 @@ from urllib import parse as parser
 
 import requests
 from bs4 import BeautifulSoup
-from page_loader.file_functions import (
-    make_directory,
-    replace_source_link,
-    write_to_file,
-)
-from page_loader.naming_functions import get_file_name, get_folder_name
-from page_loader.url_functions import (
+from page_loader.content_processing import (
     get_element_attributes,
     get_local_content,
     get_raw_data,
-    get_source_url,
-    get_url_with_netloc,
+    replace_source_link,
 )
+from page_loader.file_processing import make_directory, write_to_file
+from page_loader.naming_functions import get_file_name, get_folder_name
+from page_loader.url_functions import get_source_url, get_url_with_netloc
 from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')

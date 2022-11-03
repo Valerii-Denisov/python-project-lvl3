@@ -12,7 +12,7 @@ from page_loader.logger_config import LOGGING_CONFIG
 
 logging.config.dictConfig(LOGGING_CONFIG)
 log = logging.getLogger('app_logger')
-file_log = logging.getLogger('console_logger')
+file_log = logging.getLogger('file_logger')
 
 
 def main():

@@ -33,7 +33,7 @@ LOGGING_CONFIG = {
             'level': 'DEBUG',
             'handlers': ['file_loger', 'console'],
         },
-        'console_logger': {
+        'file_logger': {
             'level': 'INFO',
             'handlers': ['console'],
         },
