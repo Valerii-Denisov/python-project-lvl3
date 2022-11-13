@@ -1,5 +1,4 @@
 """Contain logging configuration."""
-import sys
 
 LOGGING_CONFIG = {
     'version': 1,
@@ -15,12 +14,6 @@ LOGGING_CONFIG = {
         },
     },
     'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard_console',
-            'stream': sys.stderr,
-        },
         'file_loger': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -31,11 +24,7 @@ LOGGING_CONFIG = {
     'loggers': {
         'app_logger': {
             'level': 'DEBUG',
-            'handlers': ['file_loger', 'console'],
-        },
-        'file_logger': {
-            'level': 'INFO',
-            'handlers': ['console'],
+            'handlers': ['file_loger'],
         },
     },
 }
