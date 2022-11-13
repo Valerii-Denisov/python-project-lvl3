@@ -10,7 +10,6 @@ from page_loader.content import (
     get_attribute_name,
     get_local_content_tags,
     get_response,
-    replace_source_link,
 )
 from page_loader.file import make_directory, write_to_file
 from page_loader.naming import get_file_name, get_folder_name
@@ -49,7 +48,7 @@ def download(saving_url, local_path):
             max=len(local_tags),
         )
         for tag in local_tags:
-            log_pars.info('\nTrying to download the item: {0}'.format(
+            log_pars.info('Trying to download the item: {0}'.format(
                 tag[source_attribute_name],
             ))
             element_url = parser.urljoin(saving_url, tag[source_attribute_name])
@@ -65,10 +64,9 @@ def download(saving_url, local_path):
                 )
             else:
                 write_to_file(element_local_path, content)
-                replace_source_link(
-                    tag,
-                    os.path.join(os.path.split(target_directory_path)[1], name),
-                    source_attribute_name,
+                tag[source_attribute_name] = os.path.join(
+                    os.path.split(target_directory_path)[1],
+                    name,
                 )
                 log_pars.info('The item is downloaded.')
                 bar.next()

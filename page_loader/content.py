@@ -94,15 +94,3 @@ def get_attribute_name(resource_tag):
     else:
         attribute_name = 'href'
     return attribute_name
-
-
-def replace_source_link(element, new_link, link):
-    """
-    Replace resource references with local ones.
-
-    Parameters:
-         element: tag;
-         new_link: string;
-         link: string.
-    """
-    element[link] = new_link
