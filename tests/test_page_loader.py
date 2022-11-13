@@ -1,6 +1,6 @@
 import pytest
 from page_loader import download
-from page_loader.naming_functions import get_file_name
+from page_loader.naming import get_file_name
 import os
 import requests
 

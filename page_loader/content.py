@@ -1,15 +1,16 @@
 """The module contains the main functions for working with content."""
-import os
+import logging
 import re
 from urllib import parse as parser
 
 import requests
-from page_loader.url_functions import log_pars
+
+log_pars = logging.getLogger('app_logger')
 
 
-def get_raw_data(url):
+def get_response(url):
     """
-    Load data from URL-address.
+    Get a response to the HTTP-request.
 
     Parameters:
         url: string.
@@ -20,21 +21,21 @@ def get_raw_data(url):
         error_three: requests.exceptions.Timeout.
 
     Returns:
-          Raw page data.
+          Response object.
     """
     try:
-        raw_data = requests.get(url)
-        raw_data.raise_for_status()
+        response = requests.get(url)
+        response.raise_for_status()
     except requests.exceptions.HTTPError as error_one:
-        log_pars.debug('The item cannot be loaded. Find HTTP error')
+        log_pars.error('The item cannot be loaded. HTTP error found.')
         raise error_one
     except requests.exceptions.ConnectionError as error_two:
-        log_pars.debug('The connection cannot be established.')
+        log_pars.error('The connection cannot be established.')
         raise error_two
     except requests.exceptions.Timeout as error_three:
-        log_pars.debug('The time for connection is over.')
+        log_pars.error('The time for connection is over.')
         raise error_three
-    return raw_data
+    return response
 
 
 def is_local_content(element, base_url):
@@ -54,7 +55,7 @@ def is_local_content(element, base_url):
         return resource_netloc in {'', base_netloc}
 
 
-def get_local_content(page_soup, tag, link, base_url):
+def get_local_content_tags(page_soup, tag, link, base_url):
     """
     Build a list of local elements.
 
@@ -78,34 +79,30 @@ def get_local_content(page_soup, tag, link, base_url):
     return result
 
 
-def get_element_attributes(resource_tag):
+def get_attribute_name(resource_tag):
     """
-    Return attributes of HTML element.
+    Return name of the attribute containing the URL of the element.
 
     Parameters:
         resource_tag: string.
 
     Returns:
-        link: string.
+        attribute_name: string.
     """
     if resource_tag in {'img', 'script'}:
-        link = 'src'
+        attribute_name = 'src'
     else:
-        link = 'href'
-    return link
+        attribute_name = 'href'
+    return attribute_name
 
 
-def replace_source_link(element, directory, name, link):
+def replace_source_link(element, new_link, link):
     """
     Replace resource references with local ones.
 
     Parameters:
          element: tag;
-         name: string;
-         directory: string;
+         new_link: string;
          link: string.
     """
-    element[link] = os.path.join(
-        os.path.split(directory)[1],
-        name,
-    )
+    element[link] = new_link

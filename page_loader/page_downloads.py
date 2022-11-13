@@ -6,15 +6,14 @@ from urllib import parse as parser
 
 import requests
 from bs4 import BeautifulSoup
-from page_loader.content_processing import (
-    get_element_attributes,
-    get_local_content,
-    get_raw_data,
+from page_loader.content import (
+    get_attribute_name,
+    get_local_content_tags,
+    get_response,
     replace_source_link,
 )
-from page_loader.file_processing import make_directory, write_to_file
-from page_loader.naming_functions import get_file_name, get_folder_name
-from page_loader.url_functions import get_source_url, get_url_with_netloc
+from page_loader.file import make_directory, write_to_file
+from page_loader.naming import get_file_name, get_folder_name
 from progress.bar import Bar
 
 log_pars = logging.getLogger('app_logger')
@@ -31,41 +30,33 @@ def download(saving_url, local_path):
     Returns:
         Full path to saved contents.
     """
-    page_html_tree = BeautifulSoup(get_raw_data(saving_url).text, 'html.parser')
+    page_html_tree = BeautifulSoup(get_response(saving_url).text, 'html.parser')
     target_directory_path = os.path.join(
         local_path,
         get_folder_name(saving_url),
     )
     make_directory(target_directory_path)
     for content_type in ('img', 'script', 'link'):
-        linc = get_element_attributes(content_type)
-        element_list = get_local_content(
+        source_attribute_name = get_attribute_name(content_type)
+        local_tags = get_local_content_tags(
             page_html_tree,
             content_type,
-            linc,
+            source_attribute_name,
             saving_url,
         )
         bar = Bar(
             'Start download {0} content. Download: '.format(content_type),
-            max=len(element_list),
+            max=len(local_tags),
         )
-        for element in element_list:
+        for tag in local_tags:
             log_pars.info('\nTrying to download the item: {0}'.format(
-                element[linc],
+                tag[source_attribute_name],
             ))
-            full_url = get_url_with_netloc(
-                element[linc],
-                parser.urlparse(saving_url).netloc,
-            )
-            name = get_file_name(full_url)
+            element_url = parser.urljoin(saving_url, tag[source_attribute_name])
+            name = get_file_name(element_url)
             element_local_path = '{0}/{1}'.format(target_directory_path, name)
-            element_url = get_source_url(
-                parser.urlparse(saving_url),
-                element,
-                linc,
-            )
             try:
-                content = get_raw_data(element_url).content
+                content = get_response(element_url).content
             except requests.exceptions.RequestException as error_one:
                 log_pars.warning(
                     'WARNING! The item cannot be loaded.\nError: {0}'.format(
@@ -75,10 +66,9 @@ def download(saving_url, local_path):
             else:
                 write_to_file(element_local_path, content)
                 replace_source_link(
-                    element,
-                    target_directory_path,
-                    name,
-                    linc,
+                    tag,
+                    os.path.join(os.path.split(target_directory_path)[1], name),
+                    source_attribute_name,
                 )
                 log_pars.info('The item is downloaded.')
                 bar.next()
